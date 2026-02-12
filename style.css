@@ -528,12 +528,11 @@ h1, h2, h3 {
     }
 
     .writing-item {
-        grid-template-columns: 100px 1fr;
-        gap: 2rem;
+        grid-template-columns: 1fr;
+        gap: 1rem;
     }
 
     .writing-link {
-        grid-column: 2;
         margin-top: 1rem;
     }
 }
@@ -569,8 +568,6 @@ h1, h2, h3 {
     }
 
     .writing-item {
-        grid-template-columns: 1fr;
-        gap: 1rem;
         padding: 1.5rem 0;
     }
 
