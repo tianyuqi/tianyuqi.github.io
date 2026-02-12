@@ -12,19 +12,15 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Update current time in footer
+// Update minutes since June 28, 1989 at noon
 function updateTime() {
+    const referenceDate = new Date('1989-06-28T12:00:00');
     const now = new Date();
-    const timeString = now.toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false,
-        timeZone: 'America/New_York'
-    });
+    const diffMs = now - referenceDate;
+    const diffMinutes = diffMs / (1000 * 60);
     const timeElement = document.getElementById('current-time');
     if (timeElement) {
-        timeElement.textContent = `EST ${timeString}`;
+        timeElement.textContent = diffMinutes.toFixed(1);
     }
 }
 
