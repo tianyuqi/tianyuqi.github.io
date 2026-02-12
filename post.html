@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Blog post">
+    <title id="page-title">Post - Tianyu Qi</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-brand">TQ</a>
+            <ul class="nav-links">
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="writing.html" class="active">Writing</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Post Content -->
+    <article class="post-page">
+        <div class="container">
+            <header class="post-header">
+                <div class="post-meta">
+                    <a href="writing.html" class="post-back">← Back to Writing</a>
+                    <span class="post-date" id="post-date"></span>
+                </div>
+                <h1 class="post-title" id="post-title">Loading...</h1>
+            </header>
+
+            <div class="post-content" id="post-content">
+                <p>Loading post...</p>
+            </div>
+        </div>
+    </article>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <div>Tianyu (Tim) Qi</div>
+                    <div>© 2026</div>
+                </div>
+                <div class="footer-time" id="current-time"></div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Get post slug from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const slug = urlParams.get('post');
+
+        if (!slug) {
+            document.getElementById('post-content').innerHTML = '<p>No post specified.</p>';
+        } else {
+            // Fetch the markdown file
+            fetch(`posts/${slug}.md`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Post not found');
+                    }
+                    return response.text();
+                })
+                .then(markdown => {
+                    // Parse frontmatter (title and date)
+                    const frontmatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/;
+                    const match = markdown.match(frontmatterRegex);
+
+                    let title = 'Untitled';
+                    let date = '';
+                    let content = markdown;
+
+                    if (match) {
+                        const frontmatter = match[1];
+                        content = match[2];
+
+                        // Parse frontmatter fields
+                        const titleMatch = frontmatter.match(/title:\s*(.+)/);
+                        const dateMatch = frontmatter.match(/date:\s*(.+)/);
+
+                        if (titleMatch) title = titleMatch[1].trim();
+                        if (dateMatch) date = dateMatch[1].trim();
+                    }
+
+                    // Update page title and metadata
+                    document.getElementById('page-title').textContent = `${title} - Tianyu Qi`;
+                    document.getElementById('post-title').textContent = title;
+                    document.getElementById('post-date').textContent = date;
+
+                    // Render markdown to HTML
+                    const html = marked.parse(content);
+                    document.getElementById('post-content').innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error loading post:', error);
+                    document.getElementById('post-content').innerHTML = '<p>Error loading post. Post not found.</p>';
+                    document.getElementById('post-title').textContent = 'Error';
+                });
+        }
+    </script>
+</body>
+</html>
