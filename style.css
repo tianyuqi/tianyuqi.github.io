@@ -378,6 +378,7 @@ h1, h2, h3 {
     font-size: 0.875rem;
     color: var(--gray);
     position: relative;
+    white-space: nowrap;
 }
 
 .writing-date::before {
