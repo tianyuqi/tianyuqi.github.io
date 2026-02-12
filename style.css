@@ -27,6 +27,23 @@ body {
     color: var(--black);
     background-color: var(--white);
     font-size: 16px;
+    cursor: default;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:
+        linear-gradient(90deg, var(--light-gray) 1px, transparent 1px),
+        linear-gradient(0deg, var(--light-gray) 1px, transparent 1px);
+    background-size: 100px 100px;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: -1;
 }
 
 .container {
@@ -43,7 +60,8 @@ h1, h2, h3 {
 
 /* Navigation */
 .navbar {
-    background: var(--white);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
     border-bottom: var(--border);
     position: sticky;
     top: 0;
@@ -107,16 +125,29 @@ h1, h2, h3 {
     padding: 12rem 0 8rem;
     border-bottom: var(--border);
     position: relative;
+    overflow: hidden;
 }
 
 .hero::before {
     content: '';
     position: absolute;
+    top: 0;
+    right: -10%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, var(--forest-bg) 0%, transparent 70%);
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.hero::after {
+    content: '';
+    position: absolute;
     top: 4rem;
     left: 2rem;
-    width: 2px;
-    height: 60px;
-    background: var(--forest);
+    width: 3px;
+    height: 80px;
+    background: linear-gradient(180deg, var(--forest) 0%, transparent 100%);
 }
 
 .hero-label {
@@ -135,6 +166,12 @@ h1, h2, h3 {
     margin-bottom: 2rem;
     letter-spacing: -0.04em;
     line-height: 0.95;
+    position: relative;
+}
+
+.hero-title::first-letter {
+    color: var(--forest);
+    font-size: 1.2em;
 }
 
 .hero-subtitle {
@@ -194,6 +231,21 @@ h1, h2, h3 {
     grid-template-columns: 200px 1fr;
     gap: 4rem;
     align-items: start;
+    position: relative;
+}
+
+.about-grid::before {
+    content: '01';
+    position: absolute;
+    top: -1rem;
+    right: 2rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 8rem;
+    font-weight: 700;
+    color: var(--light-gray);
+    opacity: 0.3;
+    line-height: 1;
+    pointer-events: none;
 }
 
 .about-label,
@@ -258,7 +310,23 @@ h1, h2, h3 {
     left: 0;
     width: 60px;
     height: 3px;
-    background: var(--forest);
+    background: linear-gradient(90deg, var(--forest) 0%, transparent 100%);
+}
+
+.writing-page::before {
+    content: 'Writing';
+    position: absolute;
+    top: 6rem;
+    right: 2rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 12rem;
+    font-weight: 700;
+    color: var(--light-gray);
+    opacity: 0.15;
+    line-height: 1;
+    pointer-events: none;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
 }
 
 /* Writing Section */
@@ -314,6 +382,20 @@ h1, h2, h3 {
     font-family: 'Space Mono', monospace;
     font-size: 0.875rem;
     color: var(--gray);
+    position: relative;
+}
+
+.writing-date::before {
+    content: '—';
+    position: absolute;
+    left: -1.5rem;
+    color: var(--forest);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.writing-item:hover .writing-date::before {
+    opacity: 1;
 }
 
 .writing-info {
@@ -353,6 +435,21 @@ h1, h2, h3 {
     display: grid;
     grid-template-columns: 200px 1fr;
     gap: 4rem;
+    position: relative;
+}
+
+.contact-grid::before {
+    content: '02';
+    position: absolute;
+    top: -1rem;
+    right: 2rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 8rem;
+    font-weight: 700;
+    color: var(--light-gray);
+    opacity: 0.3;
+    line-height: 1;
+    pointer-events: none;
 }
 
 .contact-content {
@@ -533,9 +630,14 @@ h1, h2, h3 {
     }
 }
 
+/* Custom Cursor */
+a, button {
+    cursor: pointer;
+}
+
 /* Utility: Selection */
 ::selection {
-    background: var(--black);
+    background: var(--forest);
     color: var(--white);
 }
 
