@@ -169,11 +169,6 @@ h1, h2, h3 {
     position: relative;
 }
 
-.hero-title::first-letter {
-    color: var(--forest);
-    font-size: 1.2em;
-}
-
 .hero-subtitle {
     font-size: clamp(1.25rem, 3vw, 1.75rem);
     font-weight: 400;
