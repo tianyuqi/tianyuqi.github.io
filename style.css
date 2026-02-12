@@ -6,12 +6,13 @@
 }
 
 :root {
-    --black: #000000;
+    --black: #1a1a1a;
     --white: #ffffff;
-    --gray: #666666;
-    --light-gray: #e0e0e0;
-    --olive: #3d4a3a;
-    --olive-light: #5a6856;
+    --gray: #6b6b6b;
+    --light-gray: #e5e5e5;
+    --forest: #4a5f52;
+    --forest-light: #5d7266;
+    --forest-bg: #f4f6f5;
     --border: 2px solid var(--black);
     --border-light: 1px solid var(--light-gray);
 }
@@ -88,7 +89,7 @@ h1, h2, h3 {
     left: 0;
     width: 0;
     height: 2px;
-    background: var(--olive);
+    background: var(--forest);
     transition: width 0.3s ease;
 }
 
@@ -98,7 +99,7 @@ h1, h2, h3 {
 }
 
 .nav-links a:hover {
-    color: var(--olive);
+    color: var(--forest);
 }
 
 /* Hero Section */
@@ -115,7 +116,7 @@ h1, h2, h3 {
     left: 2rem;
     width: 2px;
     height: 60px;
-    background: var(--olive);
+    background: var(--forest);
 }
 
 .hero-label {
@@ -124,7 +125,7 @@ h1, h2, h3 {
     text-transform: uppercase;
     letter-spacing: 0.15em;
     margin-bottom: 2.5rem;
-    color: var(--olive);
+    color: var(--forest);
     font-weight: 700;
 }
 
@@ -163,7 +164,7 @@ h1, h2, h3 {
     text-transform: uppercase;
     letter-spacing: 0.1em;
     font-size: 0.75rem;
-    color: var(--olive);
+    color: var(--forest);
 }
 
 .hero-meta-value {
@@ -202,7 +203,7 @@ h1, h2, h3 {
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.15em;
-    color: var(--olive);
+    color: var(--forest);
     position: sticky;
     top: 120px;
     font-weight: 700;
@@ -222,14 +223,14 @@ h1, h2, h3 {
 .about-content a {
     color: var(--black);
     text-decoration: none;
-    border-bottom: 2px solid var(--olive);
+    border-bottom: 2px solid var(--forest);
     transition: all 0.2s ease;
     padding-bottom: 1px;
 }
 
 .about-content a:hover {
-    color: var(--olive);
-    border-bottom-color: var(--olive-light);
+    color: var(--forest);
+    border-bottom-color: var(--forest-light);
 }
 
 /* Writing Page */
@@ -257,7 +258,7 @@ h1, h2, h3 {
     left: 0;
     width: 60px;
     height: 3px;
-    background: var(--olive);
+    background: var(--forest);
 }
 
 /* Writing Section */
@@ -292,12 +293,12 @@ h1, h2, h3 {
     top: 0;
     width: 3px;
     height: 0;
-    background: var(--olive);
+    background: var(--forest);
     transition: height 0.3s ease;
 }
 
 .writing-item:hover {
-    background-color: #fafafa;
+    background-color: var(--forest-bg);
     padding-left: 1rem;
 }
 
@@ -334,7 +335,7 @@ h1, h2, h3 {
 .writing-link {
     font-family: 'Space Mono', monospace;
     text-decoration: none;
-    color: var(--olive);
+    color: var(--forest);
     font-size: 1rem;
     white-space: nowrap;
     align-self: center;
@@ -344,7 +345,7 @@ h1, h2, h3 {
 
 .writing-link:hover {
     transform: translateX(4px);
-    color: var(--olive-light);
+    color: var(--forest-light);
 }
 
 /* Contact Section */
@@ -382,12 +383,12 @@ h1, h2, h3 {
     left: 0;
     width: 0;
     height: 2px;
-    background: var(--olive);
+    background: var(--forest);
     transition: width 0.3s ease;
 }
 
 .contact-link:hover {
-    color: var(--olive);
+    color: var(--forest);
 }
 
 .contact-link:hover::after {
