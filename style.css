@@ -58,6 +58,8 @@ h1, h2, h3 {
     font-size: 1.25rem;
     font-weight: 700;
     letter-spacing: -0.02em;
+    text-decoration: none;
+    color: var(--black);
 }
 
 .nav-links {
@@ -87,7 +89,8 @@ h1, h2, h3 {
     transition: width 0.2s ease;
 }
 
-.nav-links a:hover::after {
+.nav-links a:hover::after,
+.nav-links a.active::after {
     width: 100%;
 }
 
@@ -158,6 +161,22 @@ h1, h2, h3 {
     color: var(--black);
 }
 
+/* Writing Page */
+.writing-page {
+    padding: 5rem 0;
+    min-height: calc(100vh - 400px);
+}
+
+.page-header {
+    margin-bottom: 4rem;
+}
+
+.page-title {
+    font-size: clamp(3rem, 8vw, 5rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+}
+
 /* Writing Section */
 .writing-header {
     display: grid;
@@ -169,12 +188,13 @@ h1, h2, h3 {
 .writing-list {
     display: flex;
     flex-direction: column;
+    max-width: 1000px;
 }
 
 .writing-item {
     display: grid;
-    grid-template-columns: 200px 1fr auto;
-    gap: 4rem;
+    grid-template-columns: 150px 1fr auto;
+    gap: 3rem;
     padding: 2rem 0;
     border-top: 1px solid var(--light-gray);
     align-items: start;
