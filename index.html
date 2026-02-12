@@ -6,15 +6,18 @@
     <meta name="description" content="Personal website of Tianyu Qi">
     <title>Tianyu Qi</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- Navigation -->
     <nav class="navbar">
         <div class="container">
-            <div class="nav-brand">Tianyu Qi</div>
+            <div class="nav-brand">TQ</div>
             <ul class="nav-links">
                 <li><a href="#about">About</a></li>
-                <li><a href="#projects">Projects</a></li>
+                <li><a href="#writing">Writing</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
         </div>
@@ -23,77 +26,60 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="container">
-            <h1 class="hero-title">Hi, I'm Tianyu Qi</h1>
-            <p class="hero-subtitle">Software Engineer & Data Enthusiast</p>
-            <div class="hero-cta">
-                <a href="#projects" class="btn btn-primary">View My Work</a>
-                <a href="#contact" class="btn btn-secondary">Get In Touch</a>
-            </div>
+            <h1 class="hero-title">Tianyu Qi</h1>
         </div>
     </section>
 
     <!-- About Section -->
     <section id="about" class="section">
         <div class="container">
-            <h2 class="section-title">About Me</h2>
-            <div class="about-content">
-                <p>
-                    I'm a software engineer passionate about building elegant solutions to complex problems.
-                    With experience in data analysis, visualization, and full-stack development, I enjoy
-                    creating tools that make data more accessible and actionable.
-                </p>
-                <p>
-                    When I'm not coding, you can find me exploring new technologies, contributing to open source,
-                    or diving deep into the latest tools in the data ecosystem.
-                </p>
-            </div>
-
-            <div class="skills">
-                <h3>Skills & Technologies</h3>
-                <div class="skills-grid">
-                    <div class="skill-tag">Python</div>
-                    <div class="skill-tag">JavaScript</div>
-                    <div class="skill-tag">SQL</div>
-                    <div class="skill-tag">React</div>
-                    <div class="skill-tag">Node.js</div>
-                    <div class="skill-tag">Data Analysis</div>
-                    <div class="skill-tag">PostgreSQL</div>
-                    <div class="skill-tag">Git</div>
+            <div class="about-grid">
+                <div class="about-label">01 / About</div>
+                <div class="about-content">
+                    <p>
+                        I work on data systems and spend time thinking about how people interact with information.
+                    </p>
+                    <p>
+                        Previously at [Company]. Based in [City].
+                    </p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Projects Section -->
-    <section id="projects" class="section section-alt">
+    <!-- Writing Section -->
+    <section id="writing" class="section">
         <div class="container">
-            <h2 class="section-title">Projects</h2>
-            <div class="projects-grid">
-                <div class="project-card">
-                    <h3>Project One</h3>
-                    <p>A brief description of your first project. What problem does it solve? What technologies did you use?</p>
-                    <div class="project-links">
-                        <a href="#" class="project-link">View Project →</a>
-                        <a href="#" class="project-link">GitHub →</a>
+            <div class="writing-header">
+                <div class="writing-label">02 / Writing</div>
+            </div>
+
+            <div class="writing-list">
+                <div class="writing-item">
+                    <div class="writing-date">2024-01-15</div>
+                    <div class="writing-info">
+                        <h3 class="writing-title">Post Title</h3>
+                        <p class="writing-desc">Brief description of what this post is about</p>
                     </div>
+                    <a href="#" class="writing-link">Read →</a>
                 </div>
 
-                <div class="project-card">
-                    <h3>Project Two</h3>
-                    <p>A brief description of your second project. Highlight the key features and your role in building it.</p>
-                    <div class="project-links">
-                        <a href="#" class="project-link">View Project →</a>
-                        <a href="#" class="project-link">GitHub →</a>
+                <div class="writing-item">
+                    <div class="writing-date">2023-12-08</div>
+                    <div class="writing-info">
+                        <h3 class="writing-title">Post Title</h3>
+                        <p class="writing-desc">Brief description of what this post is about</p>
                     </div>
+                    <a href="#" class="writing-link">Read →</a>
                 </div>
 
-                <div class="project-card">
-                    <h3>Project Three</h3>
-                    <p>A brief description of your third project. What did you learn? What was the impact?</p>
-                    <div class="project-links">
-                        <a href="#" class="project-link">View Project →</a>
-                        <a href="#" class="project-link">GitHub →</a>
+                <div class="writing-item">
+                    <div class="writing-date">2023-11-22</div>
+                    <div class="writing-info">
+                        <h3 class="writing-title">Post Title</h3>
+                        <p class="writing-desc">Brief description of what this post is about</p>
                     </div>
+                    <a href="#" class="writing-link">Read →</a>
                 </div>
             </div>
         </div>
@@ -102,28 +88,16 @@
     <!-- Contact Section -->
     <section id="contact" class="section">
         <div class="container">
-            <h2 class="section-title">Get In Touch</h2>
-            <p class="contact-text">
-                I'm always interested in hearing about new opportunities and collaborations.
-                Feel free to reach out!
-            </p>
-            <div class="contact-links">
-                <a href="mailto:your.email@example.com" class="contact-link">
-                    <span class="icon">✉</span>
-                    Email
-                </a>
-                <a href="https://github.com/tianyuqi" target="_blank" rel="noopener noreferrer" class="contact-link">
-                    <span class="icon">⚡</span>
-                    GitHub
-                </a>
-                <a href="https://linkedin.com/in/yourprofile" target="_blank" rel="noopener noreferrer" class="contact-link">
-                    <span class="icon">💼</span>
-                    LinkedIn
-                </a>
-                <a href="https://twitter.com/yourhandle" target="_blank" rel="noopener noreferrer" class="contact-link">
-                    <span class="icon">🐦</span>
-                    Twitter
-                </a>
+            <div class="contact-grid">
+                <div class="contact-label">03 / Contact</div>
+                <div class="contact-content">
+                    <div class="contact-links">
+                        <a href="mailto:your.email@example.com" class="contact-link">Email</a>
+                        <a href="https://github.com/tianyuqi" target="_blank" rel="noopener noreferrer" class="contact-link">GitHub</a>
+                        <a href="https://linkedin.com/in/yourprofile" target="_blank" rel="noopener noreferrer" class="contact-link">LinkedIn</a>
+                        <a href="https://twitter.com/yourhandle" target="_blank" rel="noopener noreferrer" class="contact-link">Twitter</a>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -131,7 +105,13 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2026 Tianyu Qi. All rights reserved.</p>
+            <div class="footer-content">
+                <div class="footer-info">
+                    <div>Tianyu Qi</div>
+                    <div>© 2026</div>
+                </div>
+                <div class="footer-time" id="current-time"></div>
+            </div>
         </div>
     </footer>
 

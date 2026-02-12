@@ -12,18 +12,39 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Add active state to navigation on scroll
+// Update current time in footer
+function updateTime() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+        timeZone: 'America/New_York'
+    });
+    const timeElement = document.getElementById('current-time');
+    if (timeElement) {
+        timeElement.textContent = `EST ${timeString}`;
+    }
+}
+
+// Update time every second
+updateTime();
+setInterval(updateTime, 1000);
+
+// Add active state to navigation based on scroll
 const sections = document.querySelectorAll('section[id]');
 const navLinks = document.querySelectorAll('.nav-links a');
 
-function setActiveNav() {
+function highlightNav() {
     let current = '';
+    const scrollPosition = window.scrollY;
 
     sections.forEach(section => {
-        const sectionTop = section.offsetTop;
+        const sectionTop = section.offsetTop - 150;
         const sectionHeight = section.clientHeight;
 
-        if (window.scrollY >= sectionTop - 200) {
+        if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
             current = section.getAttribute('id');
         }
     });
@@ -36,40 +57,7 @@ function setActiveNav() {
     });
 }
 
-window.addEventListener('scroll', setActiveNav);
+window.addEventListener('scroll', highlightNav);
 
-// Add animation on scroll
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -100px 0px'
-};
-
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
-        }
-    });
-}, observerOptions);
-
-// Observe project cards
-document.querySelectorAll('.project-card').forEach(card => {
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(20px)';
-    card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-    observer.observe(card);
-});
-
-// Observe skill tags
-document.querySelectorAll('.skill-tag').forEach((tag, index) => {
-    tag.style.opacity = '0';
-    tag.style.transform = 'scale(0.8)';
-    tag.style.transition = `opacity 0.4s ease ${index * 0.05}s, transform 0.4s ease ${index * 0.05}s`;
-    observer.observe(tag);
-});
-
-// Log a message for visitors who check the console
-console.log('%cHi there! 👋', 'font-size: 20px; font-weight: bold; color: #2563eb;');
-console.log('%cThanks for checking out my website.', 'font-size: 14px; color: #6b7280;');
-console.log('%cFeel free to reach out if you want to chat!', 'font-size: 14px; color: #6b7280;');
+// Console message
+console.log('Tianyu Qi — Portfolio 2026');
