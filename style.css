@@ -6,13 +6,13 @@
 }
 
 :root {
-    --black: #1a1a1a;
-    --white: #ffffff;
-    --gray: #6b6b6b;
-    --light-gray: #e5e5e5;
-    --forest: #4a5f52;
-    --forest-light: #5d7266;
-    --forest-bg: #f4f6f5;
+    --black: #1B4371; /* regal navy */
+    --white: #FFFACD; /* lemon chiffon */
+    --gray: #5A7AA0; /* adjusted gray for navy scheme */
+    --light-gray: #FFE9A3; /* lighter lemon tone */
+    --forest: #2A5780; /* complementary navy blue */
+    --forest-light: #4A7BA8; /* lighter navy blue */
+    --forest-bg: #FFFEF5; /* very light lemon */
     --border: 2px solid var(--black);
     --border-light: 1px solid var(--light-gray);
 }
@@ -60,7 +60,7 @@ h1, h2, h3 {
 
 /* Navigation */
 .navbar {
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--black);
     backdrop-filter: blur(10px);
     border-bottom: var(--border);
     position: sticky;
@@ -81,7 +81,7 @@ h1, h2, h3 {
     font-weight: 700;
     letter-spacing: -0.02em;
     text-decoration: none;
-    color: var(--black);
+    color: var(--white);
 }
 
 .nav-links {
@@ -92,7 +92,7 @@ h1, h2, h3 {
 
 .nav-links a {
     text-decoration: none;
-    color: var(--black);
+    color: var(--white);
     font-family: 'Space Mono', monospace;
     font-size: 0.875rem;
     text-transform: uppercase;
@@ -107,7 +107,7 @@ h1, h2, h3 {
     left: 0;
     width: 0;
     height: 2px;
-    background: var(--forest);
+    background: var(--light-gray);
     transition: width 0.3s ease;
 }
 
@@ -117,7 +117,7 @@ h1, h2, h3 {
 }
 
 .nav-links a:hover {
-    color: var(--forest);
+    color: var(--light-gray);
 }
 
 /* Hero Section */
