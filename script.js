@@ -55,5 +55,22 @@ function highlightNav() {
 
 window.addEventListener('scroll', highlightNav);
 
+// Section number parallax — scroll slightly slower than body content
+const sectionNumbers = document.querySelectorAll('.section-number');
+
+function updateParallax() {
+    sectionNumbers.forEach(el => {
+        const parent = el.parentElement;
+        const rect = parent.getBoundingClientRect();
+        const centerVP = window.innerHeight / 2;
+        const centerEl = rect.top + rect.height / 2;
+        const delta = (centerVP - centerEl) * 0.04;
+        el.style.transform = `translateY(${delta}px)`;
+    });
+}
+
+window.addEventListener('scroll', updateParallax, { passive: true });
+updateParallax();
+
 // Console message
 console.log('Tianyu Qi — Portfolio 2026');
