@@ -262,7 +262,7 @@ h1, h2, h3 {
     font-size: 10rem;
     font-weight: 700;
     color: var(--light-gray);
-    opacity: 0.12;
+    opacity: 0.3;
     line-height: 1;
     pointer-events: none;
     user-select: none;
@@ -575,7 +575,7 @@ h1, h2, h3 {
 
     .section-number {
         font-size: 7rem;
-        opacity: 0.1;
+        opacity: 0.3;
     }
 }
 
@@ -633,7 +633,7 @@ h1, h2, h3 {
 
     .section-number {
         font-size: 5rem;
-        opacity: 0.09;
+        opacity: 0.3;
     }
 }
 
