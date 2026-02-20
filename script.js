@@ -17,10 +17,10 @@ function updateTime() {
     const referenceDate = new Date('1989-06-28T12:00:00');
     const now = new Date();
     const diffMs = now - referenceDate;
-    const diffMinutes = diffMs / (1000 * 60);
+    const diffDays = diffMs / (1000 * 60 * 60 * 24);
     const timeElement = document.getElementById('current-time');
     if (timeElement) {
-        timeElement.textContent = diffMinutes.toFixed(1);
+        timeElement.textContent = diffDays.toFixed(3);
     }
 }
 
