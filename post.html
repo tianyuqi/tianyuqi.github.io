@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
 </head>
 <body>
     <!-- Navigation -->
@@ -99,7 +100,16 @@
 
                     // Render markdown to HTML
                     const html = marked.parse(content);
-                    document.getElementById('post-content').innerHTML = html;
+                    const postContent = document.getElementById('post-content');
+                    postContent.innerHTML = html;
+
+                    // Re-execute any <script> tags (innerHTML doesn't run them)
+                    postContent.querySelectorAll('script').forEach(old => {
+                        const s = document.createElement('script');
+                        Array.from(old.attributes).forEach(a => s.setAttribute(a.name, a.value));
+                        s.textContent = old.textContent;
+                        old.parentNode.replaceChild(s, old);
+                    });
                 })
                 .catch(error => {
                     console.error('Error loading post:', error);
