@@ -27,6 +27,8 @@ Between January and June 2026 the share of users active on AI features more than
 | Design | 6% | 22% | +16pp |
 | GTM | 5% | 18% | +13pp |
 
+<div class="data-chart" id="chart-function"></div>
+
 *N = 127,000 paid users active in both January and June 2026.*
 
 ### Adoption goes all the way to the top
@@ -48,6 +50,8 @@ Executives are personally active on AI at rates that match or beat their teams. 
 | CTO, 51–200 | 12% | 28% | +16pp |
 | CTO, 1–50 | 16% | 33% | +17pp |
 
+<div class="data-chart data-chart-tall" id="chart-executives"></div>
+
 *N = 13,300 executives active in both January and June 2026.*
 
 ### Adoption is consistent at every size
@@ -60,6 +64,8 @@ AI adoption roughly tripled everywhere, from startups to enterprises. Company si
 | 201–1,000 employees | 9% | 27% | +19pp |
 | 51–200 employees | 9% | 25% | +16pp |
 | 1–50 employees | 8% | 23% | +14pp |
+
+<div class="data-chart" id="chart-size"></div>
 
 *N = 199,000 paid users with a known company size, active in both January and June 2026.*
 
@@ -74,6 +80,8 @@ Between June 2025 and June 2026, time spent creating, triaging, and commenting r
 | Create & triage | +5m | −1m | +3m | +4m | +17m |
 | Assign & update | +3m | 0m | +3m | +3m | +7m |
 | Comment | +5m | +1m | +2m | +6m | +26m |
+
+<div class="data-chart" id="chart-work"></div>
 
 *Average change in minutes per user per month, June 2025 to June 2026. N = 54,300 paid users in June 2025 and 89,000 in June 2026.*
 
@@ -90,6 +98,8 @@ Two years ago, fewer than one issue in a thousand was created by AI. Teams now u
 | Jul 6, 2026 | 2,078k | 2,532k |
 | Aug 3, 2026 | 2,435k | 2,481k |
 
+<div class="data-chart" id="chart-issues"></div>
+
 *Issues created per week, excluding imported issues.*
 
 ### Planning time didn’t move inside Linear
@@ -97,6 +107,8 @@ Two years ago, fewer than one issue in a thousand was created by AI. Teams now u
 Time spent on customer requests, docs, and projects held steady in a year when nearly everything else in this report moved up. Planning practice varies widely from team to team, and plenty of it happens in conversation before it lands anywhere, so the average blends heavy planners with light ones. What the steadiness suggests is that AI has so far changed how teams execute far more than how they decide what to build.
 
 Across engineering, product, design, go-to-market, and founders, the change in monthly time spent on customer requests, docs, and projects ranged from zero to one minute between June 2025 and June 2026.
+
+<div class="data-chart" id="chart-planning"></div>
 
 ### A new layer of work appeared
 
@@ -106,6 +118,8 @@ Chatting with AI and delegating issues to agents are categories of work that did
 | --- | ---: | ---: | ---: | ---: | ---: |
 | Agent issues | +1m | +1m | 0m | 0m | +2m |
 | Chat with AI | +2m | +5m | +3m | +3m | +4m |
+
+<div class="data-chart" id="chart-ai-work"></div>
 
 *Average change in minutes per user per month, June 2025 to June 2026.*
 
@@ -123,6 +137,8 @@ The share of product managers attaching pull requests rose from 3% to 10% in two
 | Design | 1% | 2% | 8% | +7pp |
 | GTM | 1% | 1% | 3% | +2pp |
 
+<div class="data-chart" id="chart-pr-roles"></div>
+
 *Percentage of users who attached a pull request in the prior 30 days. N = 166,000 paid users in June 2026.*
 
 ### Pull requests are up 111% in two years
@@ -130,6 +146,8 @@ The share of product managers attaching pull requests rose from 3% to 10% in two
 Pull requests opened per workspace are up 111% on a June 2024 baseline. Output held roughly level for the first year, then bent upward through 2026 as model quality and adoption climbed together. We count PRs opened rather than merged, and an opened PR says nothing about the value of the change, but the inflection is hard to miss.
 
 The weekly series moved from its June 2024 baseline to +22% in June 2025, then accelerated sharply: +27% in early February 2026, +50% in early March, +80% in May, and +111% by June 21.
+
+<div class="data-chart" id="chart-pr-volume"></div>
 
 *N = 47,900 paid workspaces in June 2026.*
 
@@ -146,6 +164,8 @@ Teams that connected a coding agent roughly tripled their weekly pull requests o
 | May 17, 2026 | 60 | 10 |
 | Jun 21, 2026 | 65 | 10 |
 
+<div class="data-chart" id="chart-agents"></div>
+
 *Average pull requests opened per workspace per week. Fixed cohort of 6,887 paid teams: 4,280 with coding agents and 2,607 without.*
 
 ## A closing note
@@ -161,3 +181,5 @@ Many will rightfully argue that looking at pull requests indicates motion rather
 In future reports we intend to go deeper on the full lifecycle of work, from token spend all the way to outcomes, something we can newly observe now that code and code review run through Linear as well.
 
 — **Tim Qi, Head of Data**
+
+<script src="data-charts.js"></script>

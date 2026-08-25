@@ -828,6 +828,22 @@ a, button {
     line-height: 1.45;
 }
 
+.data-chart {
+    width: 100%;
+    margin: 2rem 0 3rem;
+    padding: 1rem 0;
+    border-top: 1px solid var(--light-gray);
+    border-bottom: 1px solid var(--light-gray);
+    overflow: hidden;
+}
+
+.data-chart svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
 .post-content th,
 .post-content td {
     padding: 0.7rem 0.65rem;
