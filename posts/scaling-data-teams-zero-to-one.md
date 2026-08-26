@@ -1,6 +1,6 @@
 ---
 title: Scaling Data Teams from Zero to One
-date: 2026-08-25
+date: 2025-10-02
 ---
 
 I had the opportunity to host a panel talk with Tim Chan at Sigsum about our experiences building out data functions from zero to one.
