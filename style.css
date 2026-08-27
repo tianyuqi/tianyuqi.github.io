@@ -22,7 +22,7 @@ a { color:inherit; }
 .hero-meta { display:flex; gap:clamp(48px,8vw,110px); margin-top:28px; }
 .hero-meta-item { display:grid; gap:7px; }
 .hero-meta-label { font-size:9px; text-transform:uppercase; opacity:.6; letter-spacing:.1em; }
-.hero-meta-value { font-family:var(--serif); font-size:clamp(18px,2.2vw,26px); line-height:1.15; }
+.hero-meta-value { font-family:var(--serif); font-size:clamp(15px,1.85vw,22px); line-height:1.15; }
 .hero-meta-value a { text-decoration-color:var(--accent); text-underline-offset:4px; }
 .section { border-top:1px solid var(--rule); }
 #about { padding-block:30px 42px; }
