@@ -7,7 +7,7 @@ a { color:inherit; }
 .site-frame { max-width:1380px; margin:auto; background:var(--paper); border:1px solid var(--rule); position:relative; overflow:hidden; }
 .container { width:100%; padding-inline:clamp(28px,6vw,92px); }
 .navbar { min-height:110px; }
-.navbar .container { min-height:inherit; display:flex; justify-content:space-between; align-items:center; }
+.navbar .container { min-height:inherit; display:flex; justify-content:flex-end; align-items:center; }
 .nav-brand,.nav-links a,.hero-meta,.coordinates,.about-label,.section-heading,.writing-date,.writing-link,.post-meta,.footer { font-family:var(--mono); }
 .nav-brand { text-decoration:none; color:var(--accent); font-size:11px; font-weight:500; letter-spacing:.08em; }
 .nav-links { display:flex; list-style:none; gap:clamp(20px,4vw,60px); }
