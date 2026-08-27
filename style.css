@@ -58,6 +58,8 @@ a { color:inherit; }
 .writing-item { display:grid; grid-template-columns:140px 1fr auto; gap:40px; align-items:center; padding:28px 0; border-bottom:1px solid var(--rule); }
 .writing-date,.writing-link { font-size:9px; text-transform:uppercase; }
 .writing-title { font-family:var(--serif); font-size:clamp(21px,3vw,30px); font-weight:400; line-height:1.1; }
+.writing-title a { text-decoration:none; transition:color .2s ease; }
+.writing-title a:hover { color:var(--accent); }
 .writing-desc { margin-top:4px; font-size:15px; opacity:.75; }
 .writing-link { color:var(--accent); text-decoration:none; }
 .post-page .container { max-width:900px; margin:auto; }
