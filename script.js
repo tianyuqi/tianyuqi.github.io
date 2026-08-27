@@ -12,22 +12,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Update minutes since June 28, 1989 at noon
-function updateTime() {
-    const referenceDate = new Date('1989-06-28T12:00:00');
-    const now = new Date();
-    const diffMs = now - referenceDate;
-    const diffDays = diffMs / (1000 * 60 * 60 * 24);
-    const timeElement = document.getElementById('current-time');
-    if (timeElement) {
-        timeElement.textContent = diffDays.toFixed(3);
-    }
-}
-
-// Update time every second
-updateTime();
-setInterval(updateTime, 1000);
-
 // Add active state to navigation based on scroll
 const sections = document.querySelectorAll('section[id]');
 const navLinks = document.querySelectorAll('.nav-links a');
