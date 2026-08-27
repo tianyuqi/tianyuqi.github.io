@@ -102,6 +102,24 @@
                     const postContent = document.getElementById('post-content');
                     postContent.innerHTML = html;
 
+                    // Normalize media embedded in Markdown so providers cannot
+                    // fall back to their small intrinsic iframe dimensions.
+                    postContent.querySelectorAll('iframe').forEach(frame => {
+                        frame.removeAttribute('width');
+                        frame.removeAttribute('height');
+                        frame.style.setProperty('display', 'block');
+                        frame.style.setProperty('width', '100%', 'important');
+                        frame.style.setProperty('height', '100%', 'important');
+                        frame.style.setProperty('border', '0');
+
+                        const wrapper = frame.closest('.video-embed');
+                        if (wrapper) {
+                            wrapper.style.setProperty('display', 'block');
+                            wrapper.style.setProperty('width', '100%', 'important');
+                            wrapper.style.setProperty('aspect-ratio', '16 / 9');
+                        }
+                    });
+
                     // Re-execute any <script> tags (innerHTML doesn't run them)
                     postContent.querySelectorAll('script').forEach(old => {
                         const s = document.createElement('script');
