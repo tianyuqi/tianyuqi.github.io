@@ -58,3 +58,25 @@ updateParallax();
 
 // Console message
 console.log('Tianyu Qi — Portfolio 2026');
+
+// Enable the compact homepage navigation only when JavaScript is available.
+const homeMenuToggle = document.querySelector('.home-menu-toggle');
+if (homeMenuToggle) {
+    const homeMenu = document.getElementById('home-menu');
+    homeMenuToggle.hidden = false;
+    homeMenuToggle.addEventListener('click', () => {
+        const expanded = homeMenuToggle.getAttribute('aria-expanded') === 'true';
+        homeMenuToggle.setAttribute('aria-expanded', String(!expanded));
+    });
+    homeMenu.addEventListener('click', event => {
+        if (event.target.closest('a')) {
+            homeMenuToggle.setAttribute('aria-expanded', 'false');
+        }
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && homeMenuToggle.getAttribute('aria-expanded') === 'true') {
+            homeMenuToggle.setAttribute('aria-expanded', 'false');
+            homeMenuToggle.focus();
+        }
+    });
+}
