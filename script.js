@@ -83,11 +83,9 @@ if (homeMenuToggle) {
 
 // Rotate the homepage photos, keeping a static first image without JavaScript.
 const homePhotos = Array.from(document.querySelectorAll('.home-photo'));
-const homePhotoToggle = document.querySelector('.home-photo-toggle');
-if (homePhotos.length > 1 && homePhotoToggle) {
+if (homePhotos.length > 1) {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let currentPhoto = 0;
-    let paused = false;
     let rotationTimer;
 
     function rotatePhoto() {
@@ -108,17 +106,11 @@ if (homePhotos.length > 1 && homePhotoToggle) {
 
     function updateRotation() {
         window.clearInterval(rotationTimer);
-        homePhotoToggle.hidden = reducedMotion.matches;
-        homePhotoToggle.textContent = paused ? 'Resume slideshow' : 'Pause slideshow';
-        if (!paused && !reducedMotion.matches && !document.hidden) {
+        if (!reducedMotion.matches && !document.hidden) {
             rotationTimer = window.setInterval(rotatePhoto, 6000);
         }
     }
 
-    homePhotoToggle.addEventListener('click', () => {
-        paused = !paused;
-        updateRotation();
-    });
     reducedMotion.addEventListener('change', updateRotation);
     document.addEventListener('visibilitychange', updateRotation);
     updateRotation();
