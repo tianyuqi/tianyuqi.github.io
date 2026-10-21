@@ -80,3 +80,46 @@ if (homeMenuToggle) {
         }
     });
 }
+
+// Rotate the homepage photos, keeping a static first image without JavaScript.
+const homePhotos = Array.from(document.querySelectorAll('.home-photo'));
+const homePhotoToggle = document.querySelector('.home-photo-toggle');
+if (homePhotos.length > 1 && homePhotoToggle) {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let currentPhoto = 0;
+    let paused = false;
+    let rotationTimer;
+
+    function rotatePhoto() {
+        // Only switch to a loaded image; failed or slow images leave no blank frame.
+        for (let offset = 1; offset < homePhotos.length; offset++) {
+            const nextPhoto = (currentPhoto + offset) % homePhotos.length;
+            const photo = homePhotos[nextPhoto];
+            if (photo.complete && photo.naturalWidth > 0) {
+                homePhotos[currentPhoto].classList.remove('is-active');
+                homePhotos[currentPhoto].setAttribute('aria-hidden', 'true');
+                photo.classList.add('is-active');
+                photo.removeAttribute('aria-hidden');
+                currentPhoto = nextPhoto;
+                break;
+            }
+        }
+    }
+
+    function updateRotation() {
+        window.clearInterval(rotationTimer);
+        homePhotoToggle.hidden = reducedMotion.matches;
+        homePhotoToggle.textContent = paused ? 'Resume slideshow' : 'Pause slideshow';
+        if (!paused && !reducedMotion.matches && !document.hidden) {
+            rotationTimer = window.setInterval(rotatePhoto, 6000);
+        }
+    }
+
+    homePhotoToggle.addEventListener('click', () => {
+        paused = !paused;
+        updateRotation();
+    });
+    reducedMotion.addEventListener('change', updateRotation);
+    document.addEventListener('visibilitychange', updateRotation);
+    updateRotation();
+}
