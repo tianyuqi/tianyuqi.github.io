@@ -46,7 +46,8 @@ a { color:inherit; }
 .contact-icon { display:none; }
 .footer { padding:22px 0; border-top:1px solid var(--rule); color:var(--ink); font-size:8px; text-transform:uppercase; letter-spacing:.08em; }
 .footer-content,.footer-info { display:flex; justify-content:space-between; align-items:center; gap:28px; }
-.writing-page,.post-page { min-height:70vh; padding:60px 0 90px; border-top:1px solid var(--rule); }
+.writing-page,.post-page,.about-page { min-height:70vh; padding:60px 0 90px; border-top:1px solid var(--rule); }
+.about-page .about-content p + p { margin-top:20px; }
 .page-header { padding-bottom:55px; }
 .page-title { font-size:clamp(70px,11vw,140px); }
 .writing-list { border-top:1px solid var(--rule); }
