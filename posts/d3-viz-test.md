@@ -61,7 +61,7 @@ The chart below shows a fictional monthly word count across eight months, render
     .selectAll('text')
       .attr('dy', '1.2em')
       .style('fill', '#1B4371')
-      .style('font-family', '"Space Mono", monospace')
+      .style('font-family', 'var(--mono)')
       .style('font-size', '12px');
 
   // Y axis
@@ -70,7 +70,7 @@ The chart below shows a fictional monthly word count across eight months, render
     .call(g => g.select('.domain').remove())
     .selectAll('text')
       .style('fill', '#5A7AA0')
-      .style('font-family', '"Space Mono", monospace')
+      .style('font-family', 'var(--mono)')
       .style('font-size', '11px');
 
   // Bars with enter animation
@@ -97,7 +97,7 @@ The chart below shows a fictional monthly word count across eight months, render
       .attr('y', d => y(d.words) - 6)
       .attr('text-anchor', 'middle')
       .style('fill', '#1B4371')
-      .style('font-family', '"Space Mono", monospace')
+      .style('font-family', 'var(--mono)')
       .style('font-size', '10px')
       .style('opacity', 0)
       .text(d => `${(d.words / 1000).toFixed(1)}k`)
@@ -198,7 +198,7 @@ A diverging stacked bar chart showing fictional Likert-scale survey responses ac
       .attr('text-anchor', 'end')
       .attr('dominant-baseline', 'middle')
       .style('fill', '#1B4371')
-      .style('font-family', '"Space Mono", monospace')
+      .style('font-family', 'var(--mono)')
       .style('font-size', '11px')
       .text(d => d);
 
@@ -209,7 +209,7 @@ A diverging stacked bar chart showing fictional Likert-scale survey responses ac
     .call(g => g.select('.domain').remove())
     .selectAll('text')
       .style('fill', '#5A7AA0')
-      .style('font-family', '"Space Mono", monospace')
+      .style('font-family', 'var(--mono)')
       .style('font-size', '10px');
 
   // Legend
@@ -220,7 +220,7 @@ A diverging stacked bar chart showing fictional Likert-scale survey responses ac
     g.append('text')
       .attr('x', 15).attr('y', 9)
       .style('fill', '#1B4371')
-      .style('font-family', '"Space Mono", monospace')
+      .style('font-family', 'var(--mono)')
       .style('font-size', '9px')
       .text(cat);
   });
@@ -313,7 +313,7 @@ A chord diagram showing bidirectional influence between five writing genres. The
     ].join(' '))
     .attr('text-anchor', d => d.angle > Math.PI ? 'end' : 'start')
     .style('fill',        '#1B4371')
-    .style('font-family', '"Space Mono", monospace')
+    .style('font-family', 'var(--mono)')
     .style('font-size',   '11px')
     .text(d => groups[d.index]);
 }());
@@ -427,7 +427,7 @@ An interactive zoomable sunburst showing a hierarchy of writing genres. Click an
       .attr('fill-opacity', d => +labelVisible(d.current))
       .attr('transform',    d => labelTransform(d.current))
       .style('font-size',   d => d.depth === 1 ? '11px' : '9px')
-      .style('font-family', '"Space Mono", monospace')
+      .style('font-family', 'var(--mono)')
       .style('fill',        d => d.depth === 1 ? '#FFFACD' : '#1B4371')
       .text(d => d.data.name);
 
@@ -447,7 +447,7 @@ An interactive zoomable sunburst showing a hierarchy of writing genres. Click an
   const centerText = svg.append('text')
     .attr('text-anchor', 'middle')
     .attr('dy', '0.35em')
-    .style('font-family', '"Space Mono", monospace')
+    .style('font-family', 'var(--mono)')
     .style('font-size', '10px')
     .style('fill', '#1B4371')
     .style('pointer-events', 'none')
