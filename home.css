@@ -5,9 +5,6 @@
 .home-hero { position:relative; isolation:isolate; color:#fffdf7; min-width:0; }
 .home-photo { position:absolute; inset:0; z-index:-2; width:100%; height:100%; object-fit:cover; object-position:46% center; opacity:0; transition:opacity 1s ease; }
 .home-photo.is-active { opacity:1; }
-.home-photo-toggle { position:absolute; bottom:28px; left:clamp(28px,4.5vw,72px); min-height:44px; padding:8px 14px; border:1px solid rgba(255,253,247,.6); border-radius:3px; background:rgba(15,35,51,.7); color:inherit; font:12px var(--mono); cursor:pointer; }
-.home-photo-toggle:hover { background:rgba(15,35,51,.9); }
-.home-photo-toggle:focus-visible { outline:2px solid #fffdf7; outline-offset:5px; }
 @media (prefers-reduced-motion:reduce) {
     .home-photo { transition:none; }
 }
