@@ -46,9 +46,10 @@ a { color:inherit; }
 .contact-icon { display:none; }
 .footer { padding:22px 0; border-top:1px solid var(--rule); color:var(--ink); font-size:8px; text-transform:uppercase; letter-spacing:.08em; }
 .footer-content,.footer-info { display:flex; justify-content:space-between; align-items:center; gap:28px; }
-.writing-page,.post-page,.about-page { min-height:70vh; padding:60px 0 90px; border-top:1px solid var(--rule); }
+.writing-page,.projects-page,.post-page,.about-page { min-height:70vh; padding:60px 0 90px; border-top:1px solid var(--rule); }
 .about-page .about-content p + p { margin-top:20px; }
 .page-header { padding-bottom:55px; }
+.projects-empty { padding:28px 0; border-block:1px solid var(--rule); font-size:19px; color:#626c77; }
 .writing-list { border-top:1px solid var(--rule); }
 .writing-item { display:grid; grid-template-columns:140px 1fr auto; gap:40px; align-items:center; padding:28px 0; border-bottom:1px solid var(--rule); }
 .writing-date { font-size:9px; text-transform:uppercase; }
