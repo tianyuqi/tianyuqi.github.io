@@ -79,6 +79,9 @@ h1 em { font-weight: 400; color: #6b7b59; }
 .mode-options small { font-size: 9px; color: var(--muted); }
 .mode-options input:checked + span { background: #e9ecdf; border-color: #dce1cf; }
 .mode-options input:focus-visible + span { outline: 2px solid #53674b; outline-offset: 3px; }
+.operation-settings .mode-options label { width: 145px; }
+.operation-settings .mode-options label > span { justify-content: center; }
+.difficulty-help { color: var(--muted); font-size: 10px; line-height: 1.5; margin: 8px 0 0; }
 .how-to { margin: 14px auto 0; max-width: 340px; color: var(--muted); font-size: 11px; line-height: 1.7; text-align: left; }
 .how-to summary { list-style: none; text-align: center; min-height: 32px; display: flex; justify-content: center; align-items: center; }
 .how-to summary::-webkit-details-marker { display: none; }

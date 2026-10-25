@@ -1,7 +1,7 @@
 import { StrictMode, useEffect, useReducer, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { adjacent, availableHint, CELLS, complete, gameReducer, generatePuzzle, type Mode, type Pair } from './game';
-import { loadMode, saveMode } from './settings';
+import { adjacent, availableHint, CELLS, complete, gameReducer, generatePuzzle, generateMultiplicationPuzzle, validPair, type Difficulty, type Mode, type Operation, type Pair } from './game';
+import { loadDifficulty, loadMode, loadOperation, saveDifficulty, saveMode, saveOperation } from './settings';
 import './style.css';
 
 const colors = ['sage', 'peach', 'lavender', 'blue', 'rose'];
@@ -13,8 +13,10 @@ const points = Array.from({ length: 6 }, (_, i) => {
 const seed = () => crypto.getRandomValues(new Uint32Array(1))[0];
 
 function App() {
+  const [mode, setMode] = useState<Mode>(loadMode);
+  const [difficulty, setDifficulty] = useState<Difficulty>(loadDifficulty);
   const [game, dispatch] = useReducer(gameReducer, undefined, () => ({
-    puzzle: generatePuzzle(loadMode(), seed()), pairs: [], history: [],
+    puzzle: loadOperation() === 'multiplication' ? generateMultiplicationPuzzle(difficulty, seed()) : generatePuzzle(mode, seed()), pairs: [], history: [],
   }));
   const [selected, setSelected] = useState<number | null>(null);
   const [hint, setHint] = useState<Pair | undefined>();
@@ -24,7 +26,11 @@ function App() {
   const cellRefs = useRef<(SVGGElement | null)[]>([]);
   const won = complete(game.puzzle, game.pairs);
 
-  useEffect(() => { saveMode(game.puzzle.mode); }, [game.puzzle.mode]);
+  const operation = game.puzzle.operation;
+  const symbol = operation === 'multiplication' ? '×' : '+';
+  useEffect(() => { saveMode(mode); }, [mode]);
+  useEffect(() => { saveDifficulty(difficulty); }, [difficulty]);
+  useEffect(() => { saveOperation(operation); }, [operation]);
   useEffect(() => {
     if (error === null) return;
     const timer = window.setTimeout(() => setError(null), 450);
@@ -32,12 +38,16 @@ function App() {
   }, [error]);
 
   function clearSelection() { setSelected(null); setHint(undefined); setError(null); }
-  function newPuzzle(mode = game.puzzle.mode) {
-    let next = generatePuzzle(mode, seed());
+  function newPuzzle(nextOperation = operation, nextMode = mode, nextDifficulty = difficulty) {
+    const generate = () => nextOperation === 'multiplication'
+      ? generateMultiplicationPuzzle(nextDifficulty, seed()) : generatePuzzle(nextMode, seed());
+    let next = generate();
     // A fresh seed can happen to produce the same visible board.
     while (next.target === game.puzzle.target && next.numbers.join() === game.puzzle.numbers.join()) {
-      next = generatePuzzle(mode, seed());
+      next = generate();
     }
+    setMode(nextMode);
+    setDifficulty(nextDifficulty);
     dispatch({ type: 'new', puzzle: next });
     clearSelection();
     setMessage('A fresh little challenge. Take your time.');
@@ -54,10 +64,10 @@ function App() {
     } else if (selected === null) {
       setSelected(cell);
       setMessage(`Find a touching number to make ${game.puzzle.target}.`);
-    } else if (!adjacent(selected, cell) || game.puzzle.numbers[selected] + game.puzzle.numbers[cell] !== game.puzzle.target) {
+    } else if (!validPair(game.puzzle, [selected, cell])) {
       setError(cell);
       setMessage(!adjacent(selected, cell) ? 'Almost — choose hexagons that share an edge.' :
-        `${game.puzzle.numbers[selected]} + ${game.puzzle.numbers[cell]} doesn’t make ${game.puzzle.target}. Try another neighbor.`);
+        `${game.puzzle.numbers[selected]} ${symbol} ${game.puzzle.numbers[cell]} doesn’t make ${game.puzzle.target}. Try another neighbor.`);
     } else {
       dispatch({ type: 'pair', pair: [selected, cell] });
       setSelected(null);
@@ -68,7 +78,7 @@ function App() {
     clearSelection();
     const pair = availableHint(game.puzzle, game.pairs);
     setHint(pair);
-    setMessage(pair ? `Try ${game.puzzle.numbers[pair[0]]} + ${game.puzzle.numbers[pair[1]]}. The dotted hexagons show you where.` :
+    setMessage(pair ? `Try ${game.puzzle.numbers[pair[0]]} ${symbol} ${game.puzzle.numbers[pair[1]]}. The dotted hexagons show you where.` :
       'These pairs leave no way to finish. Undo a pair to open up the board.');
   }
   function moveFocus(cell: number, key: string) {
@@ -95,10 +105,18 @@ function App() {
         <p>Ten numbers. Five connections. A little moment of clarity.</p>
       </div>
 
+      <fieldset className="settings operation-settings">
+        <legend>OPERATION</legend>
+        <div className="mode-options">{(['addition', 'multiplication'] as Operation[]).map(value => <label key={value}>
+          <input type="radio" name="operation" value={value} checked={operation === value} onChange={() => newPuzzle(value)} />
+          <span>{value === 'addition' ? 'Addition +' : 'Multiplication ×'}</span>
+        </label>)}</div>
+      </fieldset>
+
       <section className="puzzle-panel" aria-label="Hexagon number pairs game">
-        <div className="target"><span>MAKE EACH PAIR ADD UP TO</span><strong key={game.puzzle.target}>{game.puzzle.target}</strong></div>
+        <div className="target"><span>{operation === 'multiplication' ? 'MAKE EACH PAIR MULTIPLY TO' : 'MAKE EACH PAIR ADD UP TO'}</span><strong key={game.puzzle.target}>{game.puzzle.target}</strong></div>
         <p className="board-instruction" id="board-help">Tap two touching hexagons to make a pair.</p>
-        <svg className="board" viewBox="38 8 348 254" role="group" aria-label={`Puzzle board. Target ${game.puzzle.target}.`} aria-describedby="board-help keyboard-help">
+        <svg className="board" viewBox="38 8 348 254" role="group" aria-label={`Puzzle board. ${operation === 'multiplication' ? 'Multiply' : 'Add'} to ${game.puzzle.target}.`} aria-describedby="board-help keyboard-help">
           <g className="connections" aria-hidden="true">
             {game.pairs.map(([a, b], index) => <line key={`${a}-${b}`} className={colors[index]}
               x1={positions[a].x} y1={positions[a].y} x2={positions[b].x} y2={positions[b].y} />)}
@@ -143,17 +161,24 @@ function App() {
         }}><span aria-hidden="true">↶</span> Undo last move</button>
       </section>
 
-      <fieldset className="settings">
+      {operation === 'addition' ? <fieldset className="settings">
         <legend>YOUR NUMBER RANGE</legend>
-        <div className="mode-options">{([1, 2, 3] as Mode[]).map(mode => <label key={mode}>
-          <input type="radio" name="mode" value={mode} checked={game.puzzle.mode === mode} onChange={() => newPuzzle(mode)} />
-          <span>{mode} {mode === 1 ? 'digit' : 'digits'}<small>0–{10 ** mode - 1}</small></span>
+        <div className="mode-options">{([1, 2, 3] as Mode[]).map(value => <label key={value}>
+          <input type="radio" name="mode" value={value} checked={mode === value} onChange={() => newPuzzle(operation, value)} />
+          <span>{value} {value === 1 ? 'digit' : 'digits'}<small>0–{10 ** value - 1}</small></span>
         </label>)}</div>
-      </fieldset>
+      </fieldset> : <fieldset className="settings">
+        <legend>MULTIPLICATION DIFFICULTY</legend>
+        <div className="mode-options">{(['easy', 'medium', 'hard'] as Difficulty[]).map(value => <label key={value}>
+          <input type="radio" name="difficulty" value={value} checked={difficulty === value} onChange={() => newPuzzle(operation, mode, value)} />
+          <span>{value === 'easy' ? 'Easy' : value === 'medium' ? 'Medium' : 'Hard'}<small>{value === 'easy' ? '24–36' : value === 'medium' ? '48–72' : '84–120'}</small></span>
+        </label>)}</div>
+        <p className="difficulty-help">{difficulty === 'easy' ? 'Familiar facts, with no competing matches.' : difficulty === 'medium' ? 'More factors, with a few tempting matches.' : 'More tempting matches. Plan all five pairs.'}</p>
+      </fieldset>}
       <details className="how-to">
         <summary>How to play <span aria-hidden="true">+</span></summary>
-        <p>Connect neighboring hexagons whose numbers add up to the target. Each number belongs to one pair. Find all five pairs to finish.</p>
-        <p>Tap a completed pair to undo it. Hint highlights a pair without making the move. Changing the number range starts a new puzzle.</p>
+        <p>Connect neighboring hexagons whose numbers {operation === 'multiplication' ? 'multiply to' : 'add up to'} the target. Each number belongs to one pair. Find all five pairs to finish.</p>
+        <p>Tap a completed pair to undo it. Hint highlights a pair without making the move. Changing the operation, number range, or difficulty starts a new puzzle.</p>
         <p id="keyboard-help">Keyboard: Tab to the board, use arrow keys to move, and Enter or Space to select. Escape clears your selection.</p>
       </details>
     </main>
