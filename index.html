@@ -19,7 +19,7 @@
             <img class="home-photo" src="assets/golden-gate-coast.webp" alt="Golden Gate Bridge and the rocky Pacific coastline" width="2048" height="1365" aria-hidden="true" decoding="async">
             <nav class="home-nav" aria-label="Main navigation">
                 <a class="home-brand" href="index.html">TQ</a>
-                <button class="home-menu-toggle" type="button" aria-expanded="false" aria-controls="home-menu" aria-label="Toggle navigation" hidden>
+                <button class="home-menu-toggle" type="button" aria-expanded="false" aria-controls="home-menu" aria-label="Open navigation" hidden>
                     <span></span><span></span><span></span>
                 </button>
                 <ul id="home-menu" class="home-menu">
@@ -71,7 +71,17 @@
 
             <section class="home-projects" aria-labelledby="projects-heading">
                 <h2 id="projects-heading" class="home-label">Projects</h2>
-                <p class="projects-empty">Projects coming soon.</p>
+                <ul class="project-list">
+                    <li>
+                        <a href="/hex-pairs/" class="project-entry">
+                            <div>
+                                <h3>Hex Pairs</h3>
+                                <p>A number puzzle: connect neighboring hexagons to reach the target sum.</p>
+                            </div>
+                            <span class="project-arrow" aria-hidden="true">→</span>
+                        </a>
+                    </li>
+                </ul>
                 <a href="projects.html" class="home-view-all">View all projects <span aria-hidden="true">→</span></a>
             </section>
 
