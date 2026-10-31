@@ -12,5 +12,5 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true
   },
-  "include": ["hex-pairs/src"]
+  "include": ["hex-pairs/src", "estimathon/src"]
 }

@@ -10,3 +10,4 @@ for (const entry of await readdir('.', { withFileTypes: true })) {
   }
 }
 await cp('dist/hex-pairs', '_site/hex-pairs', { recursive: true });
+await cp('dist/estimathon', '_site/estimathon', { recursive: true });
