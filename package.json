@@ -6,9 +6,12 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "test": "vitest run",
-    "build": "tsc --noEmit && vite build && vite build --config estimathon/vite.config.ts && node scripts/build-site.mjs",
+    "build": "tsc --noEmit && vite build && vite build --config estimathon/vite.config.ts && vite build --config homebuyer/vite.config.ts && node scripts/build-site.mjs",
     "preview": "vite preview --host 0.0.0.0",
-    "dev:estimathon": "vite --config estimathon/vite.config.ts --host 0.0.0.0"
+    "dev:estimathon": "vite --config estimathon/vite.config.ts --host 0.0.0.0",
+    "dev:homebuyer": "vite --config homebuyer/vite.config.ts --host 0.0.0.0",
+    "data:homebuyer": "node scripts/homebuyer/import.mjs",
+    "test:homebuyer-data": "node --test scripts/homebuyer/normalize.test.mjs"
   },
   "dependencies": {
     "lz-string": "^1.5.0",

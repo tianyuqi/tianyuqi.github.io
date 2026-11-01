@@ -1,6 +1,6 @@
 import { cp, mkdir, readdir, rm } from 'node:fs/promises';
 
-// Keep the existing static site intact; publish the game in its own directory.
+// Keep the existing static site intact; publish each game in its own directory.
 await rm('_site', { recursive: true, force: true });
 await mkdir('_site');
 for (const entry of await readdir('.', { withFileTypes: true })) {
@@ -11,3 +11,4 @@ for (const entry of await readdir('.', { withFileTypes: true })) {
 }
 await cp('dist/hex-pairs', '_site/hex-pairs', { recursive: true });
 await cp('dist/estimathon', '_site/estimathon', { recursive: true });
+await cp('dist/homebuyer', '_site/homebuyer', { recursive: true });

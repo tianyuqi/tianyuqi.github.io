@@ -1,6 +1,6 @@
 import { defineConfig } from 'vitest/config';
 
-// Discover both games independently of either app's Vite root.
+// Discover games independently of any app's Vite root.
 export default defineConfig({
-  test: { include: ['hex-pairs/src/**/*.test.ts', 'estimathon/src/**/*.test.ts'] },
+  test: { include: ['hex-pairs/src/**/*.test.ts', 'estimathon/src/**/*.test.ts', 'homebuyer/src/**/*.test.ts'] },
 });
