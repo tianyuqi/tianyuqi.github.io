@@ -24,6 +24,7 @@ import {
   type State,
 } from './game';
 import { SAMPLE } from './sample';
+import { BuilderGuide } from './BuilderGuide';
 import { LONG_URL, readUrl, stateUrl } from './url';
 import './style.css';
 
@@ -447,6 +448,7 @@ function App() {
         <p className="eyebrow">The game builder</p>
         {h1('Curiosity, in five questions.')}
         <p className="lede">Pick your questions. Set the answers. Send a little challenge.</p>
+        <BuilderGuide />
         <form
           noValidate
           onSubmit={(event) => {
