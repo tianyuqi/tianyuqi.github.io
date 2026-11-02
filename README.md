@@ -12,7 +12,7 @@ Choose Addition with 1–3 digit numbers or Multiplication with Easy, Medium, an
 
 The seeded generator constructs candidate boards from edge matchings, then uses a backtracking solver to reject boards unless they have exactly one solution. Hints solve the remaining board with current pairs locked. Settings persist locally; each visit starts a fresh puzzle.
 
-To deploy, select **GitHub Actions** under the repository’s **Settings → Pages → Build and deployment → Source**, then merge to `main` (or run the “Build and deploy website” workflow). The workflow tests and builds all three games, copies all existing site pages, assets, posts, and PDFs unchanged, and deploys `_site/` with the games under `/hex-pairs/`, `/estimathon/`, and `/homebuyer/`. Pull requests build and test without deploying. No backend, API keys, or custom domain changes are needed.
+To deploy, select **GitHub Actions** under the repository’s **Settings → Pages → Build and deployment → Source**, then merge to `main` (or run the “Build and deploy website” workflow). The workflow tests and builds all four games, copies all existing site pages, assets, posts, and PDFs unchanged, and deploys `_site/` with the games under `/hex-pairs/`, `/estimathon/`, `/homebuyer/`, and `/number-hunt/`. Pull requests build and test without deploying. No backend, API keys, or custom domain changes are needed.
 
 Estimathon is an entirely client-side estimation game at **https://tianyuqi.github.io/estimathon/**, also linked from Home and Projects. Players create or play exactly five questions, then share a score and challenge friends to the same questions.
 
@@ -33,3 +33,15 @@ SF Home Buying Game is a static React + TypeScript app at `/homebuyer/`. Players
 - `npm test -- homebuyer/src` checks exact scoring, active-time deadlines, sampling, and sharing.
 - `npm run test:homebuyer-data` checks CSV normalization, polygon lookup, deduplication, and immutable publication.
 - `npm run build` includes the game and versioned JSON in `_site/homebuyer/` for the existing Pages workflow.
+
+Number Hunt is a mobile-first timed arithmetic game at **https://tianyuqi.github.io/number-hunt/**, linked from Projects.
+
+- `npm run dev:number-hunt` serves it at http://localhost:5173/number-hunt/.
+- `npm test -- number-hunt/src` checks all six preset/rule combinations, distribution, expression validity, stage timing, URL validation, and refresh recovery.
+- `npm run build` publishes it to `_site/number-hunt/` with the existing Pages workflow.
+
+Clear nine 9s, eight 8s, down through one 1, then five 0s. The first tap starts the clock; wrong taps cost time, completed stages add time up to 60 seconds, and the final stage ends without a bonus. Easy uses +/− (45s, +25s, −1s), Normal adds × (30s, +20s, −2s), and Hard adds exact ÷ (20s, +15s, −3s). Exact answers are the default; Last digit accepts nonnegative integer results with the matching units digit. Tuning and operand limits are in `number-hunt/src/game.ts`.
+
+Version 1 concrete boards use compact `[left, operator, right, hiddenDigit]` tuples compressed with bundled `lz-string.compressToEncodedURIComponent` in `?g=`. Validation bounds both encoded and expanded data and checks every expression and the complete digit distribution. Typical full URLs are well below 2,000 characters. Compression is **not encryption**: a decoded URL exposes the board answers. Shares contain the complete puzzle and a fresh timer, never transient run state. Copy result adds an emoji stage summary without listing answers; native sharing is available on supported browsers, with manual copy fallback.
+
+The most recent run is saved locally under its exact board payload. Refresh restores that run, counting all real elapsed time, including time spent away. Opening an unseen shared board starts fresh; revisiting the current board can resume its local run. Restart resets the identical board; New game and setting changes create a new board and URL. Storage is optional and no backend is required. Keyboard players can Tab to the board, move with arrows/Home/End, and select with Enter/Space. Feedback is announced, and reduced-motion preferences suppress tile animation.
