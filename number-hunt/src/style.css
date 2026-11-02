@@ -780,3 +780,76 @@ footer {
 .game {
   scroll-margin-top: 8px;
 }
+
+/* Play gets the whole viewport; setup and instructions stay on the start screen. */
+.play-page {
+  max-width: 620px;
+  padding: 12px;
+}
+main.play-screen {
+  display: block;
+  padding: 0;
+}
+.play-screen .game {
+  display: flex;
+  flex-direction: column;
+  height: calc(100dvh - 24px);
+  min-height: 500px;
+  max-height: 1000px;
+  padding: 16px;
+}
+.play-screen .hud {
+  position: static;
+  padding: 0;
+  flex-shrink: 0;
+}
+.play-screen .dashboard {
+  margin: 12px 0;
+}
+.play-screen .target strong {
+  font-size: 52px;
+}
+.play-screen .stage-strip {
+  margin: 10px 0;
+}
+.play-screen .board-wrap {
+  flex: 1;
+  min-height: 0;
+}
+.play-screen .board {
+  height: 100%;
+  grid-template-rows: repeat(10, minmax(0, 1fr));
+  gap: 5px;
+}
+.play-screen .tile {
+  height: auto;
+}
+.play-screen .feedback {
+  min-height: 28px;
+  margin: 6px 0;
+  flex-shrink: 0;
+}
+.play-screen .keyboard-help {
+  margin-top: 8px;
+}
+@media (max-width: 740px) {
+  .play-page {
+    padding: 6px;
+  }
+  .play-screen .game {
+    height: calc(100dvh - 12px);
+    padding: 12px;
+  }
+  .play-screen .keyboard-help {
+    display: none;
+  }
+}
+
+.play-screen.is-finished .game {
+  height: auto;
+  min-height: calc(100dvh - 24px);
+  max-height: none;
+}
+.play-screen.is-finished .board-wrap {
+  min-height: 460px;
+}
