@@ -9,6 +9,8 @@ for (const entry of await readdir('.', { withFileTypes: true })) {
     await cp(entry.name, `_site/${entry.name}`, { recursive: true });
   }
 }
+await mkdir('_site/shared');
+await cp('shared/site-header.css', '_site/shared/site-header.css');
 await cp('dist/hex-pairs', '_site/hex-pairs', { recursive: true });
 await cp('dist/estimathon', '_site/estimathon', { recursive: true });
 await cp('dist/homebuyer', '_site/homebuyer', { recursive: true });

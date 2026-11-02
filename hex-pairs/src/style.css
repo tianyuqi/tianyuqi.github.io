@@ -23,10 +23,6 @@ button { touch-action: manipulation; }
 button:disabled { opacity: .4; cursor: default; }
 button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid #53674b; outline-offset: 5px; }
 .page-shell { max-width: 1328px; padding: 0 48px; margin: auto; }
-.masthead { height: 64px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); }
-.home-link { font-family: Georgia, serif; font-size: 28px; letter-spacing: -1px; }
-.home-link span { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 12px; color: var(--muted); letter-spacing: .02em; margin-left: 14px; }
-.edition { font-size: 10px; letter-spacing: .15em; color: var(--muted); }
 .game { width: min(100%, 500px); margin: 20px auto; text-align: center; }
 .eyebrow { display: inline-flex; align-items: center; gap: 7px; font-size: 9px; font-weight: 600; letter-spacing: .16em; color: #606f50; }
 .eyebrow svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.5; }
@@ -98,10 +94,6 @@ h1 em { font-weight: 400; color: #6b7b59; }
 }
 @media (max-width: 600px) {
   .page-shell { padding: 0 22px; }
-  .masthead { height: 59px; }
-  .home-link { font-size: 24px; }
-  .home-link span { font-size: 10px; margin-left: 8px; }
-  .edition { display: none; }
   .game { margin: 20px auto; }
   h1 { font-size: 51px; margin: 9px 0; }
   .eyebrow { font-size: 8px; }
@@ -120,7 +112,6 @@ h1 em { font-weight: 400; color: #6b7b59; }
   .page-footer > span { font-size: 11px; }
 }
 @media (max-width: 600px) and (max-height: 750px) {
-  .masthead { height: 46px; }
   .game { margin: 15px auto 18px; }
   .eyebrow { display: none; }
   h1 { font-size: 38px; margin-top: 0; }

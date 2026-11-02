@@ -1,3 +1,4 @@
+import { SiteHeader } from '../../shared/SiteHeader';
 import { StrictMode, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
@@ -177,10 +178,10 @@ function App() {
     const url = location.href;
     const text = finished
       ? summary(board, run, url)
-      : `Number Hunt · ${board.d} · ${board.r === 'exact' ? 'Exact answer' : 'Last digit'}\nCan you clear all 50?\n${url}`;
+      : `Number Search · ${board.d} · ${board.r === 'exact' ? 'Exact answer' : 'Last digit'}\nCan you clear all 50?\n${url}`;
     try {
       if (native && navigator.share)
-        await navigator.share({ title: 'Number Hunt', text });
+        await navigator.share({ title: 'Number Search', text });
       else {
         await navigator.clipboard.writeText(text);
         setMessage(
@@ -198,20 +199,12 @@ function App() {
 
   return (
     <div className="page">
-      <header className="masthead">
-        <a href="/">
-          tq<span> / little experiments</span>
-        </a>
-        <a href="/projects.html">
-          ALL PROJECTS <span aria-hidden="true">↗</span>
-        </a>
-      </header>
       <main>
         <section className="intro" aria-labelledby="title">
           <h1 id="title">
             Number
             <br />
-            <em>Hunt</em>
+            <em>Search</em>
             <span className="period">.</span>
           </h1>
           <div className="settings">
@@ -293,7 +286,7 @@ function App() {
             open={matchMedia('(min-width: 741px)').matches}
           >
             <summary>
-              How to hunt <span aria-hidden="true">↙</span>
+              How to play <span aria-hidden="true">↙</span>
             </summary>
             <ol>
               <li>
@@ -317,12 +310,12 @@ function App() {
             <p className="small">
               Press Start game to reveal the board and start with{' '}
               {level.initial}s. The clock keeps running if you leave the page.
-              No pausing, just hunting.
+              No pausing, keep searching.
             </p>
           </details>
         </section>
 
-        <section className={`game ${urgent}`} aria-label="Number Hunt game">
+        <section className={`game ${urgent}`} aria-label="Number Search game">
           {session.notice && (
             <p className="notice" role="alert">
               {session.notice}
@@ -330,7 +323,7 @@ function App() {
           )}
           <div className="hud">
             <div className="game-top">
-              <span className="eyebrow">THE HUNT</span>
+              <span className="eyebrow">THE SEARCH</span>
               <span className="mode-badge">
                 {board.d} /{' '}
                 {board.r === 'exact' ? 'exact answer' : 'last digit'}
@@ -338,7 +331,7 @@ function App() {
             </div>
             <div className="dashboard">
               <div className="target">
-                <span>{finished ? 'HUNT COMPLETE' : 'FIND ALL THE'}</span>
+                <span>{finished ? 'SEARCH COMPLETE' : 'FIND ALL THE'}</span>
                 <div>
                   <strong>{target ?? '✓'}</strong>
                   <p>
@@ -411,7 +404,7 @@ function App() {
           </div>
           {ready ? (
             <div className="start-panel">
-              <h2>Ready to hunt?</h2>
+              <h2>Ready to search?</h2>
               <p>
                 The board appears when you start. Each correct answer resets
                 your {level.initial}s timer.
@@ -576,7 +569,7 @@ function App() {
         </section>
       </main>
       <footer>
-        <span>Number Hunt</span>
+        <span>Number Search</span>
         <a href="/">Made by Tim Qi ↗</a>
       </footer>
     </div>
@@ -584,6 +577,7 @@ function App() {
 }
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
+    <SiteHeader />
     <App />
   </StrictMode>,
 );

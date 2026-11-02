@@ -47,32 +47,6 @@ textarea:focus-visible {
   margin: auto;
   padding: 0 48px;
 }
-.masthead {
-  height: 98px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--line);
-}
-.masthead > a:first-child {
-  font-family: 'Newsreader', serif;
-  font-size: 29px;
-}
-.masthead a:first-child span {
-  font:
-    12px 'DM Mono',
-    monospace;
-  color: var(--muted);
-}
-.masthead > a:last-child {
-  font:
-    10px 'DM Mono',
-    monospace;
-  letter-spacing: 1px;
-}
-.masthead > a:last-child span {
-  margin-left: 16px;
-}
 main {
   display: grid;
   grid-template-columns: 1fr 540px;
@@ -609,19 +583,6 @@ footer {
   .page {
     max-width: 530px;
     padding: 0 18px;
-  }
-  .masthead {
-    height: 68px;
-  }
-  .masthead a:first-child span {
-    font-size: 9px;
-  }
-  .masthead > a:last-child {
-    font-size: 8px;
-    letter-spacing: 0.5px;
-  }
-  .masthead > a:last-child span {
-    margin-left: 4px;
   }
   main {
     display: flex;

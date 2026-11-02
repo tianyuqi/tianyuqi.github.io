@@ -4,7 +4,7 @@ export type Operator = '+' | '-' | '*' | '/';
 // Balancing defaults, operand limits, and allowed operations live together.
 export const LEVELS = {
   easy: {
-    initial: 45,
+    initial: 90,
     penalty: 1,
     maxOperand: 20,
     maxFactor: 9,

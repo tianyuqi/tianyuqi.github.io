@@ -6,28 +6,28 @@
     <meta name="description" content="Personal website of Tianyu (Tim) Qi">
     <title>Tianyu Qi</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="shared/site-header.css">
     <link rel="stylesheet" href="home.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&amp;family=Newsreader:opsz,wght@6..72,400;6..72,500&amp;display=swap" rel="stylesheet">
 </head>
 <body class="home">
+    <header class="site-navigation">
+        <nav class="site-navigation__inner" aria-label="Main navigation">
+            <a class="site-navigation__brand" href="/" aria-label="Tim Qi home" aria-current="page">TQ</a>
+            <ul class="site-navigation__links">
+                <li><a href="/about.html">About</a></li>
+                <li><a href="/writing.html">Writing</a></li>
+                <li><a href="/projects.html">Projects</a></li>
+            </ul>
+        </nav>
+    </header>
     <main class="home-layout">
         <section id="about" class="home-hero" aria-labelledby="home-title">
             <img class="home-photo is-active" src="assets/san-francisco-coast.webp" alt="San Francisco neighborhoods and the Pacific coastline" width="2048" height="1365" fetchpriority="high">
             <img class="home-photo" src="assets/san-francisco-skyline.webp" alt="San Francisco skyline with Sutro Tower" width="2048" height="1365" aria-hidden="true" decoding="async">
             <img class="home-photo" src="assets/golden-gate-coast.webp" alt="Golden Gate Bridge and the rocky Pacific coastline" width="2048" height="1365" aria-hidden="true" decoding="async">
-            <nav class="home-nav" aria-label="Main navigation">
-                <a class="home-brand" href="index.html">TQ</a>
-                <button class="home-menu-toggle" type="button" aria-expanded="false" aria-controls="home-menu" aria-label="Open navigation" hidden>
-                    <span></span><span></span><span></span>
-                </button>
-                <ul id="home-menu" class="home-menu">
-                    <li><a href="about.html">About</a></li>
-                    <li><a href="writing.html">Writing</a></li>
-                    <li><a href="projects.html">Projects</a></li>
-                </ul>
-            </nav>
             <div class="home-intro">
                 <h1 id="home-title">Tim Qi</h1>
                 <p>I work on data stuff at <a href="https://linear.app" target="_blank" rel="noopener noreferrer">Linear</a>.<br>

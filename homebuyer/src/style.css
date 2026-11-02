@@ -63,32 +63,10 @@ button {
   margin: auto;
   padding: 34px 28px 24px;
 }
-.brand {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 52px;
-}
-.brand > a {
-  text-decoration: none;
-  font-size: 17px;
-  font-weight: 650;
-  letter-spacing: -0.7px;
-}
-.brand > a > span {
-  font-weight: 400;
-  color: #a2a69b;
-  padding: 0 5px;
-}
-.edition,
 .eyebrow {
   font-size: 10px;
   letter-spacing: 1.7px;
   font-weight: 650;
-}
-.edition {
-  color: var(--muted);
-  letter-spacing: 1.3px;
 }
 .eyebrow {
   margin: 0 0 19px;
@@ -718,16 +696,10 @@ textarea {
   .intro {
     padding-top: 2px;
   }
-  .brand {
-    margin-bottom: 54px;
-  }
 }
 @media (max-height: 760px) {
   .shell {
     padding-top: 22px;
-  }
-  .brand {
-    margin-bottom: 26px;
   }
   .round-top {
     margin-bottom: 16px;
@@ -776,17 +748,11 @@ textarea {
   .totals span {
     font-size: 9px;
   }
-  .edition {
-    font-size: 9px;
-  }
 }
 @media (max-height: 700px) {
   .shell:has(.round) {
     padding-top: 18px;
     padding-bottom: 16px;
-  }
-  .shell:has(.round) > .brand {
-    margin-bottom: 18px;
   }
   .round .property {
     padding-top: 20px;
@@ -858,9 +824,6 @@ textarea {
   .round .bid-input input {
     font-size: 28px;
   }
-  .round .brand {
-    margin-bottom: 12px;
-  }
   .round .bid-help {
     margin-bottom: 7px;
   }
@@ -880,9 +843,6 @@ textarea {
   }
   .round .round-top {
     margin-bottom: 10px;
-  }
-  .shell:has(.round) > .brand {
-    display: none;
   }
   .round .bid-actions {
     position: sticky;

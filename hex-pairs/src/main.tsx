@@ -1,3 +1,4 @@
+import { SiteHeader } from '../../shared/SiteHeader';
 import { StrictMode, useEffect, useReducer, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { adjacent, availableHint, CELLS, complete, gameReducer, generatePuzzle, generateMultiplicationPuzzle, validPair, type Difficulty, type Mode, type Operation, type Pair } from './game';
@@ -94,10 +95,6 @@ function App() {
   }
 
   return <div className="page-shell">
-    <header className="masthead">
-      <a className="home-link" href="/" aria-label="Back to Tim Qi’s homepage">tq<span> / little experiments</span></a>
-      <span className="edition">NO. 01 — A NUMBERS PUZZLE</span>
-    </header>
     <main className={`game ${won ? 'is-complete' : ''}`}>
       <div className="intro">
         <span className="eyebrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 2 8.7 5v10L12 22l-8.7-5V7Z" /></svg> A LITTLE MOMENT OF FOCUS</span>
@@ -186,4 +183,4 @@ function App() {
   </div>;
 }
 
-createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);
+createRoot(document.getElementById('root')!).render(<StrictMode><SiteHeader /><App /></StrictMode>);

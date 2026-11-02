@@ -1,3 +1,4 @@
+import { SiteHeader } from '../../shared/SiteHeader';
 import { StrictMode, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
@@ -780,16 +781,9 @@ function App() {
       <a href="#main" className="skip-link">
         Skip to content
       </a>
-      <header className="site-header">
-        <a className="brand" href="/" aria-label="Tim Qi home">
-          TQ<span> / </span>
-          <span className="brand-section">Play</span>
-        </a>
-        <button className="home-link" onClick={() => navigate(null)}>
-          Estimathon <span aria-hidden="true">↗</span>
-        </button>
-      </header>
+      <SiteHeader />
       <main id="main">
+        {state && <button className="text-button" onClick={() => navigate(null)}>← Estimathon home</button>}
         {content}
         <div className="notices" aria-live="polite">
           {notice && <p className="notice">{notice}</p>}
