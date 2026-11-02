@@ -4,6 +4,7 @@ import {
   freshRun,
   generateBoard,
   tap,
+  startRun,
   type Difficulty,
   type Rule,
 } from './game';
@@ -37,6 +38,15 @@ describe('concrete board links', () => {
         expect(JSON.stringify(decode(encode(b)))).toBe(JSON.stringify(b));
       }
   });
+  it('preserves custom operations and accepts older links without operation settings', () => {
+    const board = generateBoard('easy', 'exact', Math.random, ['/']);
+    expect(decode(encode(board))).toEqual(board);
+    expect(board.t.every((tile) => tile[1] === '/')).toBe(true);
+    const legacy = generateBoard();
+    delete legacy.o;
+    expect(decode(encode(legacy))).toEqual(legacy);
+    expect(() => validateBoard({ ...board, o: ['+'] })).toThrow();
+  });
   it('rejects broken, duplicated, oversized, unsupported, or invalid data', () => {
     for (const input of [
       '',
@@ -54,6 +64,10 @@ describe('concrete board links', () => {
       { ...b, v: 2 },
       { ...b, d: 'toString' },
       { ...b, r: 'other' },
+      { ...b, o: [] },
+      { ...b, o: ['bogus'] },
+      { ...b, o: ['+', '+'] },
+      { ...b, o: '/' },
       { ...b, t: b.t.slice(1) },
       { ...b, t: b.t.map(() => [0, '+', 9, 9]) },
     ])
@@ -78,7 +92,7 @@ describe('local run recovery', () => {
     const b = generateBoard();
     const run = tap(
       b,
-      freshRun(b),
+      startRun(freshRun(b), 1000),
       b.t.findIndex((t) => t[3] === 9),
       1000,
     );
@@ -98,7 +112,7 @@ describe('local run recovery', () => {
     expect(restoreRun(b, 1000)).toEqual(freshRun(b));
     const run = tap(
       b,
-      freshRun(b),
+      startRun(freshRun(b), 1000),
       b.t.findIndex((t) => t[3] === 9),
       1000,
     );

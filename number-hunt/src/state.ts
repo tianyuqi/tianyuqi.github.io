@@ -4,6 +4,8 @@ import {
   countFor,
   freshRun,
   LEVELS,
+  OPERATORS,
+  operatorsOf,
   STAGES,
   targetOf,
   tick,
@@ -20,18 +22,32 @@ export function validateBoard(value: unknown): Board {
     b.v !== 1 ||
     !Object.hasOwn(LEVELS, b.d) ||
     !['exact', 'last'].includes(b.r) ||
+    (b.o !== undefined &&
+      (!Array.isArray(b.o) ||
+        !b.o.length ||
+        new Set(b.o).size !== b.o.length ||
+        !b.o.every((op) => OPERATORS.includes(op)))) ||
     !Array.isArray(b.t) ||
     b.t.length !== 50
   )
     throw new Error('Invalid board version or settings.');
   if (
     !b.t.every(
-      (t) => Array.isArray(t) && t.length === 4 && validTile(t, b.d, b.r),
+      (t) =>
+        Array.isArray(t) &&
+        t.length === 4 &&
+        validTile(t, b.d, b.r, operatorsOf(b)),
     ) ||
     !STAGES.every((d) => b.t.filter((t) => t[3] === d).length === countFor(d))
   )
     throw new Error('Invalid board expressions or distribution.');
-  return { v: 1, d: b.d, r: b.r, t: b.t.map((t) => [...t] as Tile) };
+  return {
+    v: 1,
+    d: b.d,
+    r: b.r,
+    ...(b.o ? { o: [...b.o] } : {}),
+    t: b.t.map((t) => [...t] as Tile),
+  };
 }
 export const encode = (board: Board) =>
   LZString.compressToEncodedURIComponent(JSON.stringify(validateBoard(board)));

@@ -111,12 +111,6 @@ h1 em {
 .period {
   color: #b77d4e;
 }
-.dek {
-  font-size: 17px;
-  line-height: 1.7;
-  color: var(--muted);
-  margin: 0 0 32px;
-}
 .settings {
   max-width: 300px;
 }
@@ -178,6 +172,41 @@ select {
   border-radius: 7px;
   font-size: 12px;
 }
+.operations {
+  margin: 22px 0 0;
+}
+.operation-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 8px;
+  font-size: 12px;
+}
+.operation-options label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.operation-options input {
+  accent-color: var(--green);
+}
+.start-panel {
+  padding: 70px 24px;
+  text-align: center;
+  background: #f0f2e9;
+  border-radius: 8px;
+}
+.start-panel h2 {
+  font:
+    500 32px 'Newsreader',
+    serif;
+  margin: 0 0 12px;
+}
+.start-panel p {
+  font-size: 13px;
+  line-height: 1.7;
+  max-width: 290px;
+  margin: 0 auto 24px;
+}
 .setting-note {
   font-size: 10px;
   color: var(--muted);
@@ -224,20 +253,6 @@ select {
 .how p.small {
   font-size: 11px;
   color: var(--muted);
-}
-.intro-bottom {
-  display: flex;
-  gap: 12px;
-  margin-top: 28px;
-  color: var(--muted);
-}
-.intro-bottom > span {
-  font-size: 24px;
-}
-.intro-bottom p {
-  font-size: 11px;
-  line-height: 1.7;
-  margin: 0;
 }
 .game {
   padding: 24px;
@@ -631,17 +646,6 @@ footer {
   h1 em:before {
     content: ' ';
   }
-  .dek {
-    font-size: 13px;
-    line-height: 1.6;
-    margin-bottom: 20px;
-  }
-  .dek br {
-    display: none;
-  }
-  .dek br:after {
-    content: ' ';
-  }
   .settings {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -652,6 +656,11 @@ footer {
   .settings fieldset {
     margin: 0;
     grid-row: 1/3;
+  }
+  .settings fieldset.operations {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    margin-top: 18px;
   }
   .settings legend,
   .rule-label {
@@ -703,9 +712,6 @@ footer {
   }
   .how p.small {
     font-size: 10px;
-  }
-  .intro-bottom {
-    display: none;
   }
   .game {
     width: 100%;
