@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import LZString from 'lz-string';
 import { decompressBounded } from './decompress';
 import { emptyPairs, newBuilder, resultLinkState, startPlaying, type State } from './game';
-import { SAMPLE } from './sample';
+import { SAMPLE, SAMPLES } from './sample';
 import { decode, encode, MAX_ENCODED, readUrl, stateUrl, validateState } from './url';
 
 const finished: State = { ...SAMPLE, m: 'result', p: 'Alex', a: SAMPLE.q.map((q) => [q[1], q[1]]) };
@@ -22,7 +22,7 @@ describe('versioned, compressed URL state', () => {
         ['', '1e5'],
       ],
     },
-    SAMPLE,
+    ...SAMPLES.map(({ game }) => game),
     { ...SAMPLE, preview: true },
     {
       ...startPlaying(SAMPLE),
