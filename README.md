@@ -26,7 +26,7 @@ Links contain correct answers in compressed form. Compression is **not encryptio
 
 SF Home Buying Game is a static React + TypeScript app at `/homebuyer/`. Players bid on ten seeded homes with ten active seconds per home, then share a compressed challenge and compare results. The app uses no player storage or external gameplay API.
 
-**Data prerequisite:** the supplied `listing_data.csv` is still needed. Until it is imported, the published app shows a clear unavailable state instead of fabricated sales. See [the import and versioning guide](homebuyer/data/README.md) for normalization, polygon provenance, immutable releases, and the share format.
+**Data prerequisite:** the supplied `listing_data.csv` is still needed. Until it is imported, the published app shows a clear unavailable state instead of fabricated sales. A separate, clearly labeled synthetic fixture is reserved for tests and local development. See [the import and versioning guide](homebuyer/data/README.md) for normalization, polygon provenance, immutable releases, and the share format.
 
 - `npm run dev:homebuyer` serves the game at http://localhost:5173/homebuyer/.
 - `npm run data:homebuyer -- /path/to/listing_data.csv 2026-11` publishes the first real dataset (default inclusive $5M cutoff).
