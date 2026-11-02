@@ -23,7 +23,7 @@ import {
   type Pair,
   type State,
 } from './game';
-import { SAMPLE } from './sample';
+import { SAMPLES } from './sample';
 import { BuilderGuide } from './BuilderGuide';
 import { LONG_URL, readUrl, stateUrl } from './url';
 import './style.css';
@@ -350,32 +350,30 @@ function App() {
       <>
         <section className="landing">
           <div className="landing-copy">
-            <p className="eyebrow">Five questions. Infinite possibilities.</p>
+            <p className="eyebrow">A five-question estimation game</p>
             {h1('Estimathon', 'hero-title')}
             <p className="intro">
-              A little knowledge.
-              <br />A good guess.
+              Estimate a range for each answer.
             </p>
             <p className="lede">
-              How wide is your world? Put a lower and upper bound around five numerical answers. Keep them
-              close. Get them right.
+              Answer five numerical questions with a lower and upper bound. Aim for narrow ranges that
+              contain the correct answers. The lowest score wins.
             </p>
             <div className="actions">
-              <button className="primary" onClick={() => navigate(startPlaying(SAMPLE))}>
-                Play Sample Game <span aria-hidden="true">↗</span>
+              <button className="primary" onClick={() => navigate(newBuilder())}>
+                Create a Game <span aria-hidden="true">↗</span>
               </button>
-              <button onClick={() => navigate(newBuilder())}>Create a Game</button>
+              <a href="#sample-games">Try a sample game</a>
             </div>
-            <p className="small">No timer. No sign-up. Just your best estimate.</p>
+            <p className="small">Add five questions and answers, then share a link. No sign-up required.</p>
           </div>
           <div className="example">
             <div className="example-top">
-              <span className="eyebrow">A question of scale</span>
+              <span className="eyebrow">Example answer</span>
               <span className="small">01 / 05</span>
             </div>
             <h2>
-              How many squares are on
-              <br />a chessboard?
+              How many unit squares are on a standard chessboard?
             </h2>
             <div className="example-bounds">
               <div>
@@ -395,38 +393,50 @@ function App() {
               <span className="line-answer">64</span>
             </div>
             <div className="example-bottom">
-              <span>🟢 A nicely framed estimate.</span>
-              <span>≈ 1.33×</span>
+              <span>🟢 64 is within 60–80.</span>
+              <span>80 ÷ 60 ≈ 1.33×</span>
             </div>
           </div>
         </section>
-        <section className="steps">
-          <div>
-            <span className="eyebrow">01 / Make an estimate</span>
-            <p>
-              Give each answer a little
-              <br />
-              room to be right.
-            </p>
+        <section className="how-to-play" aria-labelledby="how-to-play-heading">
+          <h2 id="how-to-play-heading">How to play</h2>
+          <div className="steps">
+            <div>
+              <span className="eyebrow">01 / Enter your ranges</span>
+              <p>
+                For each question, enter a lower and upper bound that you think contain the answer.
+              </p>
+            </div>
+            <div>
+              <span className="eyebrow">02 / Check your score</span>
+              <p>
+                Narrower correct ranges score better. Every miss doubles your score. Lower is better.
+              </p>
+            </div>
+            <div>
+              <span className="eyebrow">03 / Challenge friends</span>
+              <p>
+                Share your results and a link so friends can play the same five questions and compare scores.
+              </p>
+            </div>
           </div>
-          <div>
-            <span className="eyebrow">02 / Find your balance</span>
-            <p>
-              Narrow intervals score better.
-              <br />
-              Every miss doubles your score.
-            </p>
-          </div>
-          <div>
-            <span className="eyebrow">03 / Pass it on</span>
-            <p>
-              Share your five circles.
-              <br />
-              See who can get closer.
-            </p>
+          <Scoring />
+        </section>
+        <section className="sample-games" id="sample-games" aria-labelledby="sample-games-heading">
+          <h2 id="sample-games-heading">Sample games</h2>
+          <p className="lede">Choose a topic to try a game. Each has five questions.</p>
+          <div className="sample-grid">
+            {SAMPLES.map(({ game, description }) => (
+              <article className="sample-card" key={game.t}>
+                <h3>{game.t}</h3>
+                <p>{description}</p>
+                <button onClick={() => navigate(startPlaying(game))} aria-label={`Play ${game.t}`}>
+                  Play game <span aria-hidden="true">↗</span>
+                </button>
+              </article>
+            ))}
           </div>
         </section>
-        <Scoring />
       </>
     );
   } else if (state.m === 'builder') {
@@ -806,9 +816,9 @@ function App() {
       </main>
       <footer className="site-footer">
         <span>
-          A little game by <a href="/">Tim Qi</a>
+          Estimathon by <a href="/">Tim Qi</a>
         </span>
-        <span>Trust your bounds.</span>
+        <span>Five questions. Lowest score wins.</span>
       </footer>
     </div>
   );
