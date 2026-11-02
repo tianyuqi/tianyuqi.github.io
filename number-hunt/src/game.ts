@@ -5,16 +5,14 @@ export type Operator = '+' | '-' | '*' | '/';
 export const LEVELS = {
   easy: {
     initial: 45,
-    bonus: 25,
     penalty: 1,
     maxOperand: 20,
-    maxFactor: 0,
+    maxFactor: 9,
     maxResult: 40,
     operators: ['+', '-'],
   },
   normal: {
     initial: 30,
-    bonus: 20,
     penalty: 2,
     maxOperand: 30,
     maxFactor: 9,
@@ -23,7 +21,6 @@ export const LEVELS = {
   },
   hard: {
     initial: 20,
-    bonus: 15,
     penalty: 3,
     maxOperand: 81,
     maxFactor: 12,
@@ -36,8 +33,12 @@ export interface Board {
   v: 1;
   d: Difficulty;
   r: Rule;
+  o?: Operator[]; // Missing on older shared boards; use the difficulty defaults.
   t: Tile[];
 }
+export const OPERATORS: Operator[] = ['+', '-', '*', '/'];
+export const operatorsOf = (board: Board): readonly Operator[] =>
+  board.o ?? LEVELS[board.d].operators;
 export const STAGES = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0];
 export const countFor = (digit: number) => (digit === 0 ? 5 : digit);
 export const evaluate = ([a, op, b]: Tile) =>
@@ -48,6 +49,7 @@ export function validTile(
   tile: Tile,
   difficulty: Difficulty,
   rule: Rule,
+  operators: readonly Operator[] = LEVELS[difficulty].operators,
 ): boolean {
   const [a, op, b, digit] = tile;
   const level = LEVELS[difficulty];
@@ -60,7 +62,7 @@ export function validTile(
     digit <= 9 &&
     a <= level.maxOperand &&
     b <= level.maxOperand &&
-    (level.operators as readonly string[]).includes(op) &&
+    operators.includes(op) &&
     (op !== '*' || (a <= level.maxFactor && b <= level.maxFactor)) &&
     (op !== '/' || b !== 0) &&
     Number.isInteger(result) &&
@@ -73,7 +75,11 @@ export function generateBoard(
   d: Difficulty = 'normal',
   r: Rule = 'exact',
   random = Math.random,
+  operators: readonly Operator[] = LEVELS[d].operators,
 ): Board {
+  if (!operators.length || operators.some((op) => !OPERATORS.includes(op)))
+    throw new Error('Choose at least one operation.');
+  const selected = OPERATORS.filter((op) => operators.includes(op));
   const level = LEVELS[d];
   const t: Tile[] = [];
   const shuffle = <T>(items: T[]) => {
@@ -85,18 +91,20 @@ export function generateBoard(
   };
   for (const digit of STAGES) {
     const pool: Tile[] = [];
-    for (const op of level.operators) {
+    for (const op of selected) {
       for (let a = 0; a <= level.maxOperand; a++) {
         for (let b = 0; b <= level.maxOperand; b++) {
           const tile: Tile = [a, op, b, digit];
-          if (validTile(tile, d, r)) pool.push(tile);
+          if (validTile(tile, d, r, selected)) pool.push(tile);
         }
       }
     }
-    // Every target has at least nine distinct candidates, including 0 and 1.
-    t.push(...shuffle(pool).slice(0, countFor(digit)));
+    // A single operation can have fewer distinct expressions than required tiles.
+    shuffle(pool);
+    for (let i = 0; i < countFor(digit); i++)
+      t.push([...pool[i % pool.length]] as Tile);
   }
-  return { v: 1, d, r, t: shuffle(t) };
+  return { v: 1, d, r, o: selected, t: shuffle(t) };
 }
 export interface Run {
   cleared: number[];
@@ -114,6 +122,15 @@ export const freshRun = (board: Board): Run => ({
   finishedAt: null,
   status: 'ready',
 });
+export const startRun = (run: Run, now: number): Run =>
+  run.status === 'ready'
+    ? {
+        ...run,
+        status: 'playing',
+        deadline: now + run.remaining,
+        startedAt: now,
+      }
+    : run;
 export const targetOf = (board: Board, run: Run) =>
   STAGES.find(
     (digit) =>
@@ -136,22 +153,15 @@ export function tap(
   index: number,
   now: number,
 ): Run {
-  let run = tick(previous, now);
+  const run = tick(previous, now);
   if (
     !Number.isInteger(index) ||
     index < 0 ||
     index >= 50 ||
     run.cleared.includes(index) ||
-    ['won', 'lost'].includes(run.status)
+    run.status !== 'playing'
   )
     return run;
-  if (run.status === 'ready')
-    run = {
-      ...run,
-      status: 'playing',
-      deadline: now + run.remaining,
-      startedAt: now,
-    };
   const target = targetOf(board, run);
   if (board.t[index][3] !== target) {
     const deadline = run.deadline! - LEVELS[board.d].penalty * 1000;
@@ -161,15 +171,13 @@ export function tap(
       : penalized;
   }
   const cleared = [...run.cleared, index];
-  if (cleared.length === 50)
-    return { ...run, cleared, status: 'won', finishedAt: now };
-  const next = { ...run, cleared };
-  if (targetOf(board, next) !== target) {
-    next.remaining = Math.min(
-      60000,
-      next.remaining + LEVELS[board.d].bonus * 1000,
-    );
-    next.deadline = now + next.remaining;
-  }
-  return next;
+  const remaining = LEVELS[board.d].initial * 1000;
+  return {
+    ...run,
+    cleared,
+    remaining,
+    deadline: now + remaining,
+    status: cleared.length === 50 ? 'won' : 'playing',
+    finishedAt: cleared.length === 50 ? now : null,
+  };
 }

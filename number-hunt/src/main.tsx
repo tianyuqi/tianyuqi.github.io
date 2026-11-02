@@ -6,6 +6,9 @@ import {
   freshRun,
   generateBoard,
   LEVELS,
+  OPERATORS,
+  operatorsOf,
+  startRun,
   STAGES,
   tap,
   targetOf,
@@ -13,10 +16,18 @@ import {
   type Board,
   type Difficulty,
   type Rule,
+  type Operator,
   type Run,
 } from './game';
 import { encode, readBoard, restoreRun, saveRun, summary } from './state';
 import './style.css';
+
+const operationNames: Record<Operator, string> = {
+  '+': 'Addition',
+  '-': 'Subtraction',
+  '*': 'Multiplication',
+  '/': 'Division',
+};
 
 type Session = { board: Board; run: Run; notice: string };
 function load(): Session {
@@ -33,14 +44,17 @@ function load(): Session {
 function App() {
   const [session, setSession] = useState(load);
   const { board, run } = session;
-  const [message, setMessage] = useState('Your first tile starts the clock.');
+  const [message, setMessage] = useState(
+    'Choose your settings, then start the game.',
+  );
   const [error, setError] = useState<number | null>(null);
   const [focused, setFocused] = useState(0);
   const [manualCopy, setManualCopy] = useState('');
   const cells = useRef<(HTMLButtonElement | null)[]>([]);
   const result = useRef<HTMLHeadingElement>(null);
-  const gamePanel = useRef<HTMLElement>(null);
   const level = LEVELS[board.d];
+  const operations = operatorsOf(board);
+  const ready = run.status === 'ready';
   const target = targetOf(board, run);
   const finished = run.status === 'won' || run.status === 'lost';
   const found =
@@ -72,7 +86,7 @@ function App() {
   useEffect(() => {
     const navigate = () => {
       setSession(load());
-      setMessage('Board loaded. Your first tile starts the clock.');
+      setMessage('Board loaded. Press Start game when ready.');
       setError(null);
       setManualCopy('');
     };
@@ -86,7 +100,9 @@ function App() {
   }, [error]);
   useEffect(() => {
     if (finished) result.current?.focus();
-  }, [finished]);
+    else if (run.status === 'playing')
+      cells.current[0]?.focus({ preventScroll: true });
+  }, [finished, run.status]);
   useEffect(() => {
     if (run.status === 'playing' && run.remaining < 5000)
       setMessage('Less than five seconds left.');
@@ -98,8 +114,8 @@ function App() {
     setSession({ board: next, run: freshRun(next), notice: '' });
     setMessage(
       same
-        ? 'Same questions, fresh clock. Your first tile starts it.'
-        : 'New board ready. Your first tile starts the clock.',
+        ? 'Same questions, fresh clock. Press Start game when ready.'
+        : 'New board ready. Press Start game when ready.',
     );
     setError(null);
     setFocused(0);
@@ -113,10 +129,13 @@ function App() {
   function choose(index: number) {
     const now = Date.now();
     const before = tick(run, now);
-    if (finished || before.status === 'lost' || run.cleared.includes(index))
+    if (
+      ready ||
+      finished ||
+      before.status === 'lost' ||
+      run.cleared.includes(index)
+    )
       return;
-    if (run.status === 'ready' && matchMedia('(max-width: 740px)').matches)
-      gamePanel.current?.scrollIntoView({ block: 'start' });
     const next = tap(board, run, index, now);
     setSession((s) => ({ ...s, run: next }));
     if (board.t[index][3] !== target) {
@@ -131,8 +150,8 @@ function App() {
         next.status === 'won'
           ? 'All fifty found!'
           : nextTarget !== target
-            ? `Stage complete! Up to ${level.bonus} seconds added, capped at sixty. Find all the ${nextTarget}s.`
-            : `Correct. ${countFor(target!) - found - 1} left in this stage.`,
+            ? `Timer reset to ${level.initial}s. Find all the ${nextTarget}s.`
+            : `Timer reset to ${level.initial}s. ${countFor(target!) - found - 1} left in this stage.`,
       );
     }
   }
@@ -189,22 +208,12 @@ function App() {
       </header>
       <main>
         <section className="intro" aria-labelledby="title">
-          <div className="eyebrow">
-            <span className="spark" aria-hidden="true">
-              ✳
-            </span>{' '}
-            A LITTLE QUICK THINKING
-          </div>
           <h1 id="title">
             Number
             <br />
             <em>Hunt</em>
             <span className="period">.</span>
           </h1>
-          <p className="dek">
-            Fifty expressions.
-            <br /> Ten targets. One ticking clock.
-          </p>
           <div className="settings">
             <fieldset>
               <legend>01 / PICK YOUR PACE</legend>
@@ -215,7 +224,11 @@ function App() {
                       type="radio"
                       name="difficulty"
                       checked={board.d === d}
-                      onChange={() => start(generateBoard(d, board.r))}
+                      onChange={() =>
+                        start(
+                          generateBoard(d, board.r, Math.random, operations),
+                        )
+                      }
                     />
                     <span>{d[0].toUpperCase() + d.slice(1)}</span>
                   </label>
@@ -229,12 +242,48 @@ function App() {
               id="rule"
               value={board.r}
               onChange={(e) =>
-                start(generateBoard(board.d, e.target.value as Rule))
+                start(
+                  generateBoard(
+                    board.d,
+                    e.target.value as Rule,
+                    Math.random,
+                    operations,
+                  ),
+                )
               }
             >
               <option value="exact">Exact answer</option>
               <option value="last">Last digit</option>
             </select>
+            <fieldset className="operations">
+              <legend>03 / QUESTION TYPES</legend>
+              <div className="operation-options">
+                {OPERATORS.map((op) => (
+                  <label key={op}>
+                    <input
+                      type="checkbox"
+                      checked={operations.includes(op)}
+                      disabled={
+                        operations.length === 1 && operations.includes(op)
+                      }
+                      onChange={(e) =>
+                        start(
+                          generateBoard(
+                            board.d,
+                            board.r,
+                            Math.random,
+                            e.target.checked
+                              ? [...operations, op]
+                              : operations.filter((o) => o !== op),
+                          ),
+                        )
+                      }
+                    />
+                    {operationNames[op]}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
             <p className="setting-note">
               Changing a setting deals a new board.
             </p>
@@ -256,8 +305,8 @@ function App() {
                 <strong>{level.penalty}s</strong>.
               </li>
               <li>
-                Finish a digit to bank <strong>+{level.bonus}s</strong>. Time
-                carries over, up to 60s.
+                Every correct answer resets the timer to{' '}
+                <strong>{level.initial}s</strong>.
               </li>
             </ol>
             <p>
@@ -266,25 +315,14 @@ function App() {
                 : 'The whole answer must match: 12 − 3 = 9 counts as 9.'}
             </p>
             <p className="small">
-              Start with {level.initial}s. The clock keeps running if you leave
-              the page. No pausing, just hunting.
+              Press Start game to reveal the board and start with{' '}
+              {level.initial}s. The clock keeps running if you leave the page.
+              No pausing, just hunting.
             </p>
           </details>
-          <div className="intro-bottom">
-            <span aria-hidden="true">↗</span>
-            <p>
-              Same board. Fresh eyes.
-              <br />
-              Share a little challenge with a friend.
-            </p>
-          </div>
         </section>
 
-        <section
-          ref={gamePanel}
-          className={`game ${urgent}`}
-          aria-label="Number Hunt game"
-        >
+        <section className={`game ${urgent}`} aria-label="Number Hunt game">
           {session.notice && (
             <p className="notice" role="alert">
               {session.notice}
@@ -331,7 +369,7 @@ function App() {
                 </strong>
                 <small>
                   {run.status === 'ready'
-                    ? 'starts on first tap'
+                    ? 'starts with the game'
                     : finished
                       ? 'clock stopped'
                       : 'keep going'}
@@ -339,7 +377,9 @@ function App() {
               </div>
             </div>
             <div className="timer-track" aria-hidden="true">
-              <div style={{ width: `${run.remaining / 600}%` }} />
+              <div
+                style={{ width: `${run.remaining / (level.initial * 10)}%` }}
+              />
             </div>
             <div
               className="stage-strip"
@@ -369,90 +409,128 @@ function App() {
               </span>
             </div>
           </div>
-          <div className="board-wrap">
-            <div
-              className="board"
-              role="group"
-              aria-label="50 expression tiles"
-              aria-describedby="keyboard-help"
-            >
-              {board.t.map((tile, i) => {
-                const cleared = run.cleared.includes(i);
-                return (
-                  <button
-                    key={i}
-                    ref={(el) => {
-                      cells.current[i] = el;
-                    }}
-                    tabIndex={i === focused ? 0 : -1}
-                    onFocus={() => setFocused(i)}
-                    aria-disabled={cleared || finished}
-                    aria-label={`Tile ${i + 1}: ${cleared ? 'cleared' : expression(tile)}`}
-                    className={`tile ${cleared ? 'cleared' : ''} ${error === i ? 'incorrect' : ''}`}
-                    onClick={() => choose(i)}
-                    onKeyDown={(e) => {
-                      if (
-                        e.key.startsWith('Arrow') ||
-                        e.key === 'Home' ||
-                        e.key === 'End'
-                      ) {
-                        e.preventDefault();
-                        move(i, e.key);
-                      }
-                    }}
-                  >
-                    <span>{cleared ? '·' : expression(tile)}</span>
-                  </button>
-                );
-              })}
+          {ready ? (
+            <div className="start-panel">
+              <h2>Ready to hunt?</h2>
+              <p>
+                The board appears when you start. Each correct answer resets
+                your {level.initial}s timer.
+              </p>
+              <button
+                className="primary"
+                onClick={() => {
+                  setSession((s) => ({
+                    ...s,
+                    run: startRun(s.run, Date.now()),
+                  }));
+                  setMessage('Find all the 9s.');
+                }}
+              >
+                Start game
+              </button>
             </div>
-            {finished && (
-              <div className="result">
-                <span className="result-icon" aria-hidden="true">
-                  {run.status === 'won' ? '✳' : '◷'}
-                </span>
-                <span className="eyebrow">
-                  {run.status === 'won' ? 'A CLEAN SWEEP' : 'UNTIL NEXT TIME'}
-                </span>
-                <h2 ref={result} tabIndex={-1}>
-                  {run.status === 'won' ? 'Every number found.' : 'Time’s up.'}
-                </h2>
-                <p>
-                  {run.cleared.length} / 50 tiles cleared ·{' '}
-                  {
-                    STAGES.filter(
-                      (d) =>
-                        run.cleared.filter((i) => board.t[i][3] === d)
-                          .length === countFor(d),
-                    ).length
-                  }{' '}
-                  / 10 stages
-                </p>
-                <p>
-                  {run.status === 'won'
-                    ? `${(run.remaining / 1000).toFixed(1)}s remaining`
-                    : `${Math.round((run.finishedAt! - run.startedAt!) / 1000)}s played`}
-                  <br />
-                  {board.d} ·{' '}
-                  {board.r === 'exact' ? 'Exact answer' : 'Last digit'}
-                </p>
-                <button className="primary" onClick={() => start(board, true)}>
-                  ↻ Retry this board
-                </button>
-                <button onClick={() => start(generateBoard(board.d, board.r))}>
-                  New game ↗
-                </button>
-                <button className="text-button" onClick={() => share()}>
-                  Copy result & challenge link
-                </button>
-                {typeof navigator.share === 'function' && (
-                  <button className="text-button" onClick={() => share(true)}>
-                    Share result…
-                  </button>
-                )}
+          ) : (
+            <div className="board-wrap">
+              <div
+                className="board"
+                role="group"
+                aria-label="50 expression tiles"
+                aria-describedby="keyboard-help"
+              >
+                {board.t.map((tile, i) => {
+                  const cleared = run.cleared.includes(i);
+                  return (
+                    <button
+                      key={i}
+                      ref={(el) => {
+                        cells.current[i] = el;
+                      }}
+                      tabIndex={i === focused ? 0 : -1}
+                      onFocus={() => setFocused(i)}
+                      aria-disabled={cleared || finished}
+                      aria-label={`Tile ${i + 1}: ${cleared ? 'cleared' : expression(tile)}`}
+                      className={`tile ${cleared ? 'cleared' : ''} ${error === i ? 'incorrect' : ''}`}
+                      onClick={() => choose(i)}
+                      onKeyDown={(e) => {
+                        if (
+                          e.key.startsWith('Arrow') ||
+                          e.key === 'Home' ||
+                          e.key === 'End'
+                        ) {
+                          e.preventDefault();
+                          move(i, e.key);
+                        }
+                      }}
+                    >
+                      <span>{cleared ? '·' : expression(tile)}</span>
+                    </button>
+                  );
+                })}
               </div>
-            )}
-          </div>
+              {finished && (
+                <div className="result">
+                  <span className="result-icon" aria-hidden="true">
+                    {run.status === 'won' ? '✳' : '◷'}
+                  </span>
+                  <span className="eyebrow">
+                    {run.status === 'won' ? 'A CLEAN SWEEP' : 'UNTIL NEXT TIME'}
+                  </span>
+                  <h2 ref={result} tabIndex={-1}>
+                    {run.status === 'won'
+                      ? 'Every number found.'
+                      : 'Time’s up.'}
+                  </h2>
+                  <p>
+                    {run.cleared.length} / 50 tiles cleared ·{' '}
+                    {
+                      STAGES.filter(
+                        (d) =>
+                          run.cleared.filter((i) => board.t[i][3] === d)
+                            .length === countFor(d),
+                      ).length
+                    }{' '}
+                    / 10 stages
+                  </p>
+                  <p>
+                    {run.status === 'won'
+                      ? `${(run.remaining / 1000).toFixed(1)}s remaining`
+                      : `${Math.round((run.finishedAt! - run.startedAt!) / 1000)}s played`}
+                    <br />
+                    {board.d} ·{' '}
+                    {board.r === 'exact' ? 'Exact answer' : 'Last digit'}
+                  </p>
+                  <button
+                    className="primary"
+                    onClick={() => start(board, true)}
+                  >
+                    ↻ Retry this board
+                  </button>
+                  <button
+                    onClick={() =>
+                      start(
+                        generateBoard(
+                          board.d,
+                          board.r,
+                          Math.random,
+                          operations,
+                        ),
+                      )
+                    }
+                  >
+                    New game ↗
+                  </button>
+                  <button className="text-button" onClick={() => share()}>
+                    Copy result & challenge link
+                  </button>
+                  {typeof navigator.share === 'function' && (
+                    <button className="text-button" onClick={() => share(true)}>
+                      Share result…
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
           <div
             className="feedback"
             role="status"
@@ -465,7 +543,11 @@ function App() {
             <div className="controls">
               <button
                 className="primary"
-                onClick={() => start(generateBoard(board.d, board.r))}
+                onClick={() =>
+                  start(
+                    generateBoard(board.d, board.r, Math.random, operations),
+                  )
+                }
               >
                 New game <span aria-hidden="true">↗</span>
               </button>
@@ -486,13 +568,15 @@ function App() {
               />
             </label>
           )}
-          <p className="keyboard-help" id="keyboard-help">
-            Arrow keys to explore · Enter or Space to pick
-          </p>
+          {!ready && (
+            <p className="keyboard-help" id="keyboard-help">
+              Arrow keys to explore · Enter or Space to pick
+            </p>
+          )}
         </section>
       </main>
       <footer>
-        <span>A small puzzle. A sharper mind.</span>
+        <span>Number Hunt</span>
         <a href="/">Made by Tim Qi ↗</a>
       </footer>
     </div>

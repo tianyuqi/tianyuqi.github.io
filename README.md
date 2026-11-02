@@ -37,10 +37,10 @@ SF Home Buying Game is a static React + TypeScript app at `/homebuyer/`. Players
 Number Hunt is a mobile-first timed arithmetic game at **https://tianyuqi.github.io/number-hunt/**, linked from Projects.
 
 - `npm run dev:number-hunt` serves it at http://localhost:5173/number-hunt/.
-- `npm test -- number-hunt/src` checks all six preset/rule combinations, distribution, expression validity, stage timing, URL validation, and refresh recovery.
+- `npm test -- number-hunt/src` checks all operation combinations across six preset/rule combinations, distribution, expression validity, timer resets, URL validation, and refresh recovery.
 - `npm run build` publishes it to `_site/number-hunt/` with the existing Pages workflow.
 
-Clear nine 9s, eight 8s, down through one 1, then five 0s. The first tap starts the clock; wrong taps cost time, completed stages add time up to 60 seconds, and the final stage ends without a bonus. Easy uses +/− (45s, +25s, −1s), Normal adds × (30s, +20s, −2s), and Hard adds exact ÷ (20s, +15s, −3s). Exact answers are the default; Last digit accepts nonnegative integer results with the matching units digit. Tuning and operand limits are in `number-hunt/src/game.ts`.
+Clear nine 9s, eight 8s, down through one 1, then five 0s. Press Start game to reveal the board and start the clock; every correct answer resets it to the preset's starting time, and wrong taps cost time. Easy starts at 45s (−1s per wrong tap), Normal at 30s (−2s), and Hard at 20s (−3s). Choose any combination of addition, subtraction, multiplication, and division independently of the pace. At least one operation must stay selected; a single operation may repeat expressions so every target remains solvable. Exact answers are the default; Last digit accepts nonnegative integer results with the matching units digit. Shared boards preserve the selected operations. Tuning and operand limits are in `number-hunt/src/game.ts`.
 
 Version 1 concrete boards use compact `[left, operator, right, hiddenDigit]` tuples compressed with bundled `lz-string.compressToEncodedURIComponent` in `?g=`. Validation bounds both encoded and expanded data and checks every expression and the complete digit distribution. Typical full URLs are well below 2,000 characters. Compression is **not encryption**: a decoded URL exposes the board answers. Shares contain the complete puzzle and a fresh timer, never transient run state. Copy result adds an emoji stage summary without listing answers; native sharing is available on supported browsers, with manual copy fallback.
 
