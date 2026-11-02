@@ -12,33 +12,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Add active state to navigation based on scroll
-const sections = document.querySelectorAll('section[id]');
-const navLinks = document.querySelectorAll('.nav-links a');
-
-function highlightNav() {
-    let current = '';
-    const scrollPosition = window.scrollY;
-
-    sections.forEach(section => {
-        const sectionTop = section.offsetTop - 150;
-        const sectionHeight = section.clientHeight;
-
-        if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-            current = section.getAttribute('id');
-        }
-    });
-
-    navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === `#${current}`) {
-            link.classList.add('active');
-        }
-    });
-}
-
-window.addEventListener('scroll', highlightNav);
-
 // Section number parallax — scroll slightly slower than body content
 const sectionNumbers = document.querySelectorAll('.section-number');
 
@@ -58,41 +31,6 @@ updateParallax();
 
 // Console message
 console.log('Tianyu Qi — Portfolio 2026');
-
-// Enable the compact homepage navigation only when JavaScript is available.
-const homeMenuToggle = document.querySelector('.home-menu-toggle');
-if (homeMenuToggle) {
-    const homeMenu = document.getElementById('home-menu');
-    function setHomeMenuExpanded(expanded) {
-        homeMenuToggle.setAttribute('aria-expanded', String(expanded));
-        homeMenuToggle.setAttribute('aria-label', expanded ? 'Close navigation' : 'Open navigation');
-    }
-
-    homeMenuToggle.hidden = false;
-    homeMenuToggle.addEventListener('click', () => {
-        const expanded = homeMenuToggle.getAttribute('aria-expanded') === 'true';
-        setHomeMenuExpanded(!expanded);
-    });
-    homeMenu.addEventListener('click', event => {
-        if (event.target.closest('a')) {
-            setHomeMenuExpanded(false);
-        }
-    });
-    document.addEventListener('keydown', event => {
-        if (event.key === 'Escape' && homeMenuToggle.getAttribute('aria-expanded') === 'true') {
-            setHomeMenuExpanded(false);
-            homeMenuToggle.focus();
-        }
-    });
-    document.addEventListener('click', event => {
-        if (!event.target.closest('.home-nav')) {
-            setHomeMenuExpanded(false);
-        }
-    });
-    window.matchMedia('(max-width: 760px)').addEventListener('change', () => {
-        setHomeMenuExpanded(false);
-    });
-}
 
 // Rotate the homepage photos, keeping a static first image without JavaScript.
 const homePhotos = Array.from(document.querySelectorAll('.home-photo'));

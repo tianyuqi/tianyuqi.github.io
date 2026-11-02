@@ -101,10 +101,10 @@ describe('explicit start, timer resets, and stage loop', () => {
     expect(tick(run, now + 900000)).toEqual(run);
   });
   it('applies each pace’s starting time, penalty, and reset duration', () => {
-    for (const d of ['easy', 'normal', 'hard'] as Difficulty[]) {
+    for (const [d, seconds] of [['easy', 90], ['normal', 30], ['hard', 20]] as const) {
       const b = generateBoard(d);
       let run = startRun(freshRun(b), 0);
-      expect(run.remaining).toBe(LEVELS[d].initial * 1000);
+      expect(run.remaining).toBe(seconds * 1000);
       run = tap(
         b,
         run,
@@ -112,7 +112,7 @@ describe('explicit start, timer resets, and stage loop', () => {
         5000,
       );
       expect(run.remaining).toBe(
-        (LEVELS[d].initial - LEVELS[d].penalty - 5) * 1000,
+        (seconds - LEVELS[d].penalty - 5) * 1000,
       );
       run = tap(
         b,
@@ -120,8 +120,8 @@ describe('explicit start, timer resets, and stage loop', () => {
         b.t.findIndex((t) => t[3] === 9),
         6000,
       );
-      expect(run.remaining).toBe(LEVELS[d].initial * 1000);
-      expect(run.deadline).toBe(6000 + LEVELS[d].initial * 1000);
+      expect(run.remaining).toBe(seconds * 1000);
+      expect(run.deadline).toBe(6000 + seconds * 1000);
     }
   });
   it('can lose on a wrong tap and cannot recover with a match', () => {

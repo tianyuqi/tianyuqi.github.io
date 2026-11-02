@@ -1,3 +1,4 @@
+import { SiteHeader } from '../../shared/SiteHeader';
 import {
   useCallback,
   useEffect,
@@ -76,16 +77,6 @@ function Street() {
     </svg>
   );
 }
-function Header() {
-  return (
-    <header className="brand">
-      <a href="/" aria-label="Tianyu Qi home">
-        tq<span> / </span>play
-      </a>
-      <span className="edition">SAN FRANCISCO, CA</span>
-    </header>
-  );
-}
 
 interface Loaded {
   challenge: Challenge;
@@ -143,7 +134,6 @@ function App() {
   }, []);
   return (
     <main className="shell">
-      <Header />
       {loaded?.challenge.version === SIMULATED_VERSION && (
         <p className="notice">
           <strong>Demo · Simulated homes</strong>
@@ -726,4 +716,4 @@ function freshSeed(previous: number) {
   return seed === previous ? (seed + 1) >>> 0 : seed;
 }
 
-createRoot(document.getElementById('root')!).render(<App />);
+createRoot(document.getElementById('root')!).render(<><SiteHeader /><App /></>);

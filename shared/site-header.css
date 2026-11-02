@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400&display=swap');
+
+/* Shared navigation for the static pages and project apps. */
+.site-navigation {
+  box-sizing: border-box;
+  width: 100%;
+  color: #173354;
+  background: #f5f1e8;
+  border-bottom: 1px solid rgba(23, 51, 84, .19);
+  font: 400 17px/1.5 'Newsreader', Georgia, serif;
+}
+.site-navigation__inner {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  max-width: 1380px;
+  min-height: 90px;
+  margin: 0 auto;
+  padding: 16px clamp(28px, 4vw, 64px);
+}
+.site-navigation a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: inherit;
+  font: inherit;
+  text-decoration: none;
+}
+.site-navigation .site-navigation__brand { font-size: 24px; }
+.site-navigation__links {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.site-navigation a:hover,
+.site-navigation a[aria-current] {
+  color: #ad4b2e;
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 1px;
+}
+.site-navigation a:focus-visible {
+  outline: 2px solid #ad4b2e;
+  outline-offset: 4px;
+}
+@media (max-width: 760px) {
+  .site-navigation__inner { min-height: 76px; padding: 12px 22px; gap: 20px; }
+  .site-navigation__links { gap: 20px; }
+  .site-navigation { font-size: 16px; }
+}
+@media (max-width: 360px) {
+  .site-navigation__inner { padding-inline: 16px; gap: 16px; }
+  .site-navigation__links { gap: 16px; }
+}

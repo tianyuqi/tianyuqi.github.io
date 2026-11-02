@@ -83,7 +83,7 @@ export function restoreRun(board: Board, now: number): Run {
       !r.cleared.every((i) => Number.isInteger(i) && i >= 0 && i < 50) ||
       !Number.isFinite(r.remaining) ||
       r.remaining < 0 ||
-      r.remaining > 60000 ||
+      r.remaining > LEVELS[board.d].initial * 1000 ||
       !['ready', 'playing', 'won', 'lost'].includes(r.status)
     )
       return freshRun(board);
@@ -95,7 +95,7 @@ export function restoreRun(board: Board, now: number): Run {
       !Number.isFinite(r.startedAt) ||
       r.startedAt! > now ||
       !Number.isFinite(r.deadline) ||
-      r.deadline! - now > 60000 ||
+      r.deadline! - now > LEVELS[board.d].initial * 1000 ||
       (r.status === 'won') !== (r.cleared.length === 50) ||
       (r.status === 'playing'
         ? r.finishedAt !== null
@@ -113,5 +113,5 @@ export function summary(board: Board, run: Run, url: string): string {
       ? '🟩'
       : '⬜',
   ).join('');
-  return `Number Hunt ${run.status === 'won' ? '🏆' : '⏱'} ${run.cleared.length}/50\n${board.d[0].toUpperCase() + board.d.slice(1)} · ${board.r === 'exact' ? 'Exact answer' : 'Last digit'}\n${stages}\n${run.status === 'won' ? `${Math.ceil(run.remaining / 1000)}s left` : `${Math.round(((run.finishedAt ?? Date.now()) - (run.startedAt ?? Date.now())) / 1000)}s played`}\nTry my board: ${url}`;
+  return `Number Search ${run.status === 'won' ? '🏆' : '⏱'} ${run.cleared.length}/50\n${board.d[0].toUpperCase() + board.d.slice(1)} · ${board.r === 'exact' ? 'Exact answer' : 'Last digit'}\n${stages}\n${run.status === 'won' ? `${Math.ceil(run.remaining / 1000)}s left` : `${Math.round(((run.finishedAt ?? Date.now()) - (run.startedAt ?? Date.now())) / 1000)}s played`}\nTry my board: ${url}`;
 }

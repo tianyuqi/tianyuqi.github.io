@@ -105,6 +105,22 @@ describe('local run recovery', () => {
     saveRun(b, freshRun(b));
     expect(restoreRun(b, 100000).status).toBe('ready');
   });
+  it('resumes Easy runs above 60 seconds after starting and after a match', () => {
+    storage();
+    const board = generateBoard('easy');
+    const started = startRun(freshRun(board), 1000);
+    expect(started.remaining).toBe(90000);
+    saveRun(board, started);
+    expect(restoreRun(board, 11000)).toEqual({ ...started, remaining: 80000 });
+    const matched = tap(board, started, board.t.findIndex((tile) => tile[3] === 9), 11000);
+    saveRun(board, matched);
+    expect(restoreRun(board, 12000)).toEqual({ ...matched, remaining: 89000 });
+    expect(restoreRun(board, 101000).status).toBe('lost');
+    saveRun(board, { ...started, remaining: 91000 });
+    expect(restoreRun(board, 1000)).toEqual(freshRun(board));
+    saveRun(board, { ...started, deadline: 92000 });
+    expect(restoreRun(board, 1000)).toEqual(freshRun(board));
+  });
   it('safely ignores corrupt or blocked storage and invalid progress', () => {
     storage();
     const b = generateBoard();
@@ -149,6 +165,7 @@ describe('local run recovery', () => {
       finishedAt: 6000,
     };
     const text = summary(b, run, 'https://example.org/?g=compressed');
+    expect(text).toContain('Number Search');
     expect(text).toContain('0/50');
     expect(text).toContain('⬜'.repeat(10));
     expect(text).toContain('5s played');
