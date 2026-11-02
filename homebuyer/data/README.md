@@ -1,8 +1,8 @@
 # Historical home sales
 
-**No real dataset is published yet.** The supplied `listing_data.csv` was not present in the repository or attached to HOM-15 when implementation began. The empty manifest is deliberately not a released dataset version.
+**No real dataset is published yet.** The supplied `listing_data.csv` was not present in the repository or attached to HOM-15 when implementation began. The empty manifest is deliberately not a released dataset version; the app defaults to the simulated demo until a real release is available.
 
-`testing/simulated-listings-20.json` is a synthetic fixture for game tests and local development. Its `simulated-test-20` version, `SIM-HB-*` IDs, simulated addresses, and reserved `.invalid` URLs identify it as test-only data. It stays outside `public/data/` and is not included in the release manifest, so the site will not present it as historical sales.
+`testing/simulated-listings-20.json` is a synthetic fixture for game tests and the playable demo. Its `simulated-test-20` version, `SIM-HB-*` IDs, simulated addresses, and reserved `.invalid` URLs identify it as test-only data. It is bundled with the app, stays outside `public/data/`, and is not included in the historical release manifest. The UI and shared results label demo games as simulated, and the recap omits the reserved listing links. Demo challenges use `/homebuyer/?v=1&d=simulated-test-20&s=8372641` and keep working after a real dataset becomes the default. Keep the fixture version and homes unchanged so shared seeds remain reproducible.
 
 Import the supplied file from the repository root:
 

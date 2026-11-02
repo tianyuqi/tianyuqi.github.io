@@ -85,6 +85,15 @@ it('creates links that reproduce dataset, seed and optional rival bids', () => {
   expect(new URL(gameUrl(challenge)).searchParams.has('r')).toBe(false);
   vi.unstubAllGlobals();
 });
+it('labels shared demo results as simulated homes', () => {
+  const homes = Array.from(
+    { length: 10 },
+    () => ({ salePrice: 1_000_000 }) as Home,
+  );
+  expect(shareText(homes, bids, 'https://example.com/homebuyer/', true)).toMatch(
+    /^SF Home Buying Game \(simulated homes\)\n/,
+  );
+});
 it('shares exactly two rows of five outcome squares plus totals and link', () => {
   const homes = Array.from(
     { length: 10 },

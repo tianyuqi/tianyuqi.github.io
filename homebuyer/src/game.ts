@@ -1,6 +1,7 @@
 export const ROUND_COUNT = 10;
 export const ROUND_MS = 10_000;
 export const MAX_BID = 100_000_000;
+export const SIMULATED_VERSION = 'simulated-test-20';
 export type Bid = number | null;
 export type Outcome = 'good' | 'overpaid' | 'outbid' | 'passed';
 export interface Home {
