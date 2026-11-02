@@ -15,7 +15,7 @@ import {
   sample,
   squares,
   summarize,
-  validateDataset,
+  SIMULATED_VERSION,
   type Bid,
   type Home,
   type Outcome,
@@ -27,6 +27,7 @@ import {
   shareText,
   type Challenge,
 } from './url';
+import { loadDataset } from './data';
 import './style.css';
 
 const money = (value: number) =>
@@ -108,43 +109,14 @@ function App() {
         const manifest = await response.json();
         if (typeof manifest.datasets !== 'object' || !manifest.datasets)
           throw new Error('The dataset index could not be read.');
-        setLatest(manifest.latest);
-        if (!manifest.latest)
-          throw new Error(
-            'The historical sales dataset has not been published yet. Please check back soon.',
-          );
-        const challenge = readChallenge(location.search, manifest.latest);
-        const entry = Object.hasOwn(manifest.datasets, challenge.version)
-          ? manifest.datasets[challenge.version]
-          : null;
-        if (!entry)
-          throw new Error(
-            'This link uses a dataset that is not available. Start a new game with the current homes.',
-          );
-        if (!/^[a-z0-9-]+\.json$/.test(entry.file))
-          throw new Error('The dataset index could not be read.');
-        const dataResponse = await fetch(`/homebuyer/data/${entry.file}`, {
-          signal: abort.signal,
-        });
-        if (!dataResponse.ok)
-          throw new Error(
-            'The home data could not be loaded. Please try again.',
-          );
-        const raw = await dataResponse.text();
-        const hash = Array.from(
-          new Uint8Array(
-            await crypto.subtle.digest(
-              'SHA-256',
-              new TextEncoder().encode(raw),
-            ),
-          ),
-          (b) => b.toString(16).padStart(2, '0'),
-        ).join('');
-        if (hash !== entry.sha256)
-          throw new Error(
-            'The home data did not match its published version. Please try again.',
-          );
-        const dataset = validateDataset(JSON.parse(raw), challenge.version);
+        const currentVersion = manifest.latest || SIMULATED_VERSION;
+        setLatest(currentVersion);
+        const challenge = readChallenge(location.search, currentVersion);
+        const dataset = await loadDataset(
+          challenge.version,
+          manifest.datasets,
+          abort.signal,
+        );
         if (!abort.signal.aborted) {
           history.replaceState(null, '', gameUrl(challenge, challenge.rival));
           setLoaded({
@@ -172,6 +144,13 @@ function App() {
   return (
     <main className="shell">
       <Header />
+      {loaded?.challenge.version === SIMULATED_VERSION && (
+        <p className="notice">
+          <strong>Demo · Simulated homes</strong>
+          <br />
+          Practice with fictional listings and prices, not historical sales.
+        </p>
+      )}
       {loaded ? (
         <Game
           key={`${loaded.challenge.version}-${loaded.challenge.seed}`}
@@ -234,6 +213,7 @@ function Game({ challenge, homes }: Loaded) {
   const clock = useRef<ActiveClock | null>(null);
   const locked = useRef(false);
   const title = useRef<HTMLHeadingElement>(null);
+  const simulated = challenge.version === SIMULATED_VERSION;
   const home = homes[index];
   const bid = parseBid(input);
 
@@ -293,7 +273,7 @@ function Game({ challenge, homes }: Loaded) {
   }, [phase, index, finish, next]);
 
   async function share() {
-    const text = shareText(homes, bids, gameUrl(challenge, bids));
+    const text = shareText(homes, bids, gameUrl(challenge, bids), simulated);
     try {
       if (navigator.share)
         await navigator.share({ title: 'SF Home Buying Game', text });
@@ -379,7 +359,8 @@ function Game({ challenge, homes }: Loaded) {
           Start Game <span aria-hidden="true">↗</span>
         </button>
         <p className="footnote">
-          Real historical sales · No accounts · Nothing saved
+          {simulated ? 'Simulated homes' : 'Real historical sales'} · No accounts
+          · Nothing saved
         </p>
       </section>
     );
@@ -553,18 +534,22 @@ function Game({ challenge, homes }: Loaded) {
                 · {labels[outcome(challenge.rival[i], h.salePrice)]}
               </p>
             )}
-            <a
-              className="source"
-              href={h.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Original listing ↗
-            </a>
+            {!simulated && (
+              <a
+                className="source"
+                href={h.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Original listing ↗
+              </a>
+            )}
           </article>
         ))}
         <footer className="game-footer">
-          Historical prices, not current valuations.
+          {simulated
+            ? 'Fictional listings and prices for practice.'
+            : 'Historical prices, not current valuations.'}
           <br />
           Dataset {challenge.version} ·{' '}
           <a href="https://github.com/tianyuqi/tianyuqi.github.io/tree/HEAD/homebuyer/data">

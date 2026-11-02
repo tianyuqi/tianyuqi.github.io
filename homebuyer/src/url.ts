@@ -3,6 +3,7 @@ import { decompressBounded } from '../../estimathon/src/decompress';
 import {
   MAX_BID,
   ROUND_COUNT,
+  SIMULATED_VERSION,
   labels,
   outcome,
   squares,
@@ -88,7 +89,7 @@ export function readChallenge(
     search.length > 2500 ||
     ['v', 'd', 's', 'r'].some((key) => params.getAll(key).length > 1) ||
     params.get('v') !== '1' ||
-    !VERSION.test(version) ||
+    !(VERSION.test(version) || version === SIMULATED_VERSION) ||
     !/^(0|[1-9]\d{0,9})$/.test(seedText) ||
     Number(seedText) > 0xffffffff
   ) {
@@ -119,10 +120,15 @@ export function gameUrl(challenge: Challenge, bids?: Bid[]): string {
   }).toString();
   return url.href;
 }
-export function shareText(homes: Home[], bids: Bid[], url: string): string {
+export function shareText(
+  homes: Home[],
+  bids: Bid[],
+  url: string,
+  simulated = false,
+): string {
   const cells = homes.map(
     (home, i) => squares[outcome(bids[i], home.salePrice)],
   );
   const totals = summarize(homes, bids);
-  return `SF Home Buying Game\n${cells.slice(0, 5).join('')}\n${cells.slice(5).join('')}\n${(Object.keys(labels) as (keyof typeof labels)[]).map((key) => `${totals[key]} ${key === 'good' ? (totals.good === 1 ? 'good buy' : 'good buys') : labels[key].toLowerCase()}`).join(' · ')}\nCan you buy better?\n${url}`;
+  return `SF Home Buying Game${simulated ? ' (simulated homes)' : ''}\n${cells.slice(0, 5).join('')}\n${cells.slice(5).join('')}\n${(Object.keys(labels) as (keyof typeof labels)[]).map((key) => `${totals[key]} ${key === 'good' ? (totals.good === 1 ? 'good buy' : 'good buys') : labels[key].toLowerCase()}`).join(' · ')}\nCan you buy better?\n${url}`;
 }
