@@ -32,6 +32,41 @@ updateParallax();
 // Console message
 console.log('Tianyu Qi — Portfolio 2026');
 
+// Enable the compact homepage navigation only when JavaScript is available.
+const homeMenuToggle = document.querySelector('.home-menu-toggle');
+if (homeMenuToggle) {
+    const homeMenu = document.getElementById('home-menu');
+    function setHomeMenuExpanded(expanded) {
+        homeMenuToggle.setAttribute('aria-expanded', String(expanded));
+        homeMenuToggle.setAttribute('aria-label', expanded ? 'Close navigation' : 'Open navigation');
+    }
+
+    homeMenuToggle.hidden = false;
+    homeMenuToggle.addEventListener('click', () => {
+        const expanded = homeMenuToggle.getAttribute('aria-expanded') === 'true';
+        setHomeMenuExpanded(!expanded);
+    });
+    homeMenu.addEventListener('click', event => {
+        if (event.target.closest('a')) {
+            setHomeMenuExpanded(false);
+        }
+    });
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && homeMenuToggle.getAttribute('aria-expanded') === 'true') {
+            setHomeMenuExpanded(false);
+            homeMenuToggle.focus();
+        }
+    });
+    document.addEventListener('click', event => {
+        if (!event.target.closest('.home-nav')) {
+            setHomeMenuExpanded(false);
+        }
+    });
+    window.matchMedia('(max-width: 760px)').addEventListener('change', () => {
+        setHomeMenuExpanded(false);
+    });
+}
+
 // Rotate the homepage photos, keeping a static first image without JavaScript.
 const homePhotos = Array.from(document.querySelectorAll('.home-photo'));
 if (homePhotos.length > 1) {
