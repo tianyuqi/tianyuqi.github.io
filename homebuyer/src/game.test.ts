@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import simulatedDataset from '../data/testing/simulated-listings-20.json';
 import {
   ActiveClock,
   compare,
@@ -92,6 +93,21 @@ describe('mobile bid parsing', () => {
   ])('rejects %s', (text) => expect(parseBid(text)).toBeNull());
 });
 describe('deterministic properties', () => {
+  it('validates and samples the clearly labeled 20-home testing dataset', () => {
+    const dataset = validateDataset(simulatedDataset, 'simulated-test-20');
+    expect(dataset.homes).toHaveLength(20);
+    expect(dataset.homes.every((home) => home.id.startsWith('SIM-HB-'))).toBe(
+      true,
+    );
+    expect(
+      dataset.homes.every((home) => home.address.startsWith('Simulated home ')),
+    ).toBe(true);
+    expect(
+      dataset.homes.every((home) => home.sourceUrl.includes('.invalid/')),
+    ).toBe(true);
+    expect(sample(dataset.homes, 8372641)).toHaveLength(10);
+  });
+
   it('fixes the v1 sequence, samples distinct homes and ignores input order', () => {
     const result = sample(homes, 8372641);
     expect(result.map((home) => home.id)).toEqual([

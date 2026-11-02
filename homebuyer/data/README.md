@@ -1,6 +1,8 @@
 # Historical home sales
 
-**Awaiting the supplied `listing_data.csv`.** It was not present in the repository or attached to HOM-15 when implementation began. No sample properties are published, and the game cannot start without a real eligible dataset. The empty manifest is deliberately not a released dataset version.
+**No real dataset is published yet.** The supplied `listing_data.csv` was not present in the repository or attached to HOM-15 when implementation began. The empty manifest is deliberately not a released dataset version.
+
+`testing/simulated-listings-20.json` is a synthetic fixture for game tests and local development. Its `simulated-test-20` version, `SIM-HB-*` IDs, simulated addresses, and reserved `.invalid` URLs identify it as test-only data. It stays outside `public/data/` and is not included in the release manifest, so the site will not present it as historical sales.
 
 Import the supplied file from the repository root:
 
