@@ -1,6 +1,6 @@
 # Historical home sales
 
-**No real dataset is published yet.** The supplied `listing_data.csv` was not present in the repository or attached to HOM-15 when implementation began. The empty manifest is deliberately not a released dataset version; the app defaults to the simulated demo until a real release is available.
+The real historical dataset release `2026-11` is published in `public/data/2026-11.json` and is the default game dataset. Its exact source CSV and provenance record are archived in `2026-11/`. The release contains 3,449 eligible San Francisco single-family home sales after validation, deterministic deduplication, neighborhood lookup, and the inclusive $5,000,000 sale-price cutoff.
 
 `testing/simulated-listings-20.json` is a synthetic fixture for game tests and the playable demo. Its `simulated-test-20` version, `SIM-HB-*` IDs, simulated addresses, and reserved `.invalid` URLs identify it as test-only data. It is bundled with the app, stays outside `public/data/`, and is not included in the historical release manifest. The UI and shared results label demo games as simulated, and the recap omits the reserved listing links. Demo challenges use `/homebuyer/?v=1&d=simulated-test-20&s=8372641` and keep working after a real dataset becomes the default. Keep the fixture version and homes unchanged so shared seeds remain reproducible.
 

@@ -1,1 +1,10 @@
-{"latest":null,"datasets":{}}
+{
+  "latest": "2026-11",
+  "datasets": {
+    "2026-11": {
+      "file": "2026-11.json",
+      "sha256": "82192a98e46664f5a62637a3d6d9aee9d20d08d07800f58e5c996dce15532674",
+      "homes": 3449
+    }
+  }
+}

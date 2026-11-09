@@ -1,0 +1,17 @@
+{
+  "version": "2026-11",
+  "source": "listing_data.csv",
+  "sourceSha256": "d043e010c9a24f5dffda701b1b4b53de290e4b453c1089be4971d5a2a7eaa68d",
+  "boundary": "sf-neighborhoods-2026-11-01.geojson",
+  "boundarySha256": "376c25348e45a41c540d995c3557ef48232805a152953da75ced2e5b66c86621",
+  "maxPrice": 5000000,
+  "datasetSha256": "82192a98e46664f5a62637a3d6d9aee9d20d08d07800f58e5c996dce15532674",
+  "input": 3989,
+  "kept": 3449,
+  "excluded": {
+    "ineligible": 12,
+    "invalid": 324,
+    "aboveCutoff": 200,
+    "duplicate": 4
+  }
+}
