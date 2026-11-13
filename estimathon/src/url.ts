@@ -88,11 +88,14 @@ export function decode(encoded: string): State {
 }
 export function stateUrl(state: State | null, base: string): string {
   const url = new URL('/estimathon/', base);
-  if (state) url.searchParams.set('d', encode(state));
+  if (state) url.hash = new URLSearchParams({ d: encode(state) }).toString();
   return url.href;
 }
 export function readUrl(url: string): State | null {
-  const params = new URL(url).searchParams;
+  const parsed = new URL(url);
+  const fragment = new URLSearchParams(parsed.hash.slice(1));
+  // Keep existing shared links playable, but prefer fragment state when both are present.
+  const params = fragment.has('d') ? fragment : parsed.searchParams;
   if (!params.has('d')) return null;
   if (params.getAll('d').length !== 1) throw new Error('This game link contains duplicate data.');
   return decode(params.get('d')!);

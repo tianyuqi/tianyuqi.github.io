@@ -152,11 +152,11 @@ describe('challenge and share data', () => {
     expect(newBuilder().q).toEqual(emptyPairs());
   });
   it('creates a complete text summary with exactly five circles and the URL', () => {
-    const summary = shareText(result, 'https://tianyuqi.github.io/estimathon/?d=abc');
+    const summary = shareText(result, 'https://tianyuqi.github.io/estimathon/#d=abc');
     expect(summary).toContain("Alex's Results");
     expect(summary).toContain(scoreGame(SAMPLE.q, intervals).circles);
     expect(summary).toContain(`Score: ${scoreGame(SAMPLE.q, intervals).total} (lower is better)`);
     expect(summary).toContain('3 🟢  1 🟡  1 🔴');
-    expect(summary).toContain('Think you can do better?\nhttps://tianyuqi.github.io/estimathon/?d=abc');
+    expect(summary).toContain('Think you can do better?\nhttps://tianyuqi.github.io/estimathon/#d=abc');
   });
 });
