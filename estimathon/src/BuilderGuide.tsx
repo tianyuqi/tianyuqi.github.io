@@ -25,9 +25,10 @@ export function BuilderGuide() {
       <h2 id="builder-guide-title">A whole game in a link</h2>
       <p>
         Your title, five questions, and correct answers are saved as JSON, compressed with{' '}
-        <code>lz-string</code>, and URL-escaped into the <code>?d=</code> parameter. Draft edits update
-        the address automatically; publishing creates a link ready for friends to play. No account or
-        server storage is needed—save the URL to keep your game.
+        <code>lz-string</code>, and URL-escaped into the <code>#d=</code> fragment so normal HTTP
+        requests do not send the game state to the hosting server. Draft edits update the address
+        automatically; publishing creates a link ready for friends to play. No account or server
+        storage is needed—save the URL to keep your game.
       </p>
       <p>
         The answers travel with the link. Compression is not encryption: anyone who decodes the URL

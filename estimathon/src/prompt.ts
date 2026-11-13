@@ -10,7 +10,7 @@ The game state is JSON with exactly these fields:
 - t: a title of at most 60 characters.
 - q: exactly five [question, answer] pairs. Each question is nonempty and at most 200 characters. Each answer is a decimal STRING of 1–100 digits representing an integer greater than zero, with no commas, signs, decimals, units, or scientific notation.
 
-Replace the example title and questions in this JavaScript with your game, then EXECUTE it using the lz-string npm package (version 1.5.0). Do not guess or hand-write the compressed data. The URL uses lz-string compressToEncodedURIComponent, NOT Base64 or plain JSON. URLSearchParams must escape the compressed value, especially + as %2B; do not concatenate an unescaped value or encode it twice.
+Replace the example title and questions in this JavaScript with your game, then EXECUTE it using the lz-string npm package (version 1.5.0). Do not guess or hand-write the compressed data. The URL uses lz-string compressToEncodedURIComponent, NOT Base64 or plain JSON. Store the encoded state in the URL fragment (#d=...), never the query string, so normal HTTP requests do not send it to the hosting server. URLSearchParams must escape the compressed value, especially + as %2B; do not concatenate an unescaped value or encode it twice.
 
 \`\`\`js
 import LZString from 'lz-string';
@@ -28,7 +28,7 @@ const state = {
   ]
 };
 const url = new URL(${JSON.stringify(url)});
-url.searchParams.set('d', LZString.compressToEncodedURIComponent(JSON.stringify(state)));
+url.hash = new URLSearchParams({ d: LZString.compressToEncodedURIComponent(JSON.stringify(state)) }).toString();
 console.log(url.href);
 \`\`\`
 

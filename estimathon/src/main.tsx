@@ -34,6 +34,8 @@ function load(): Route {
   try {
     const state = readUrl(location.href);
     if (state?.m === 'game' && history.state?.estimathonPreview === true) state.preview = true;
+    if (state && new URL(location.href).searchParams.has('d'))
+      history.replaceState(history.state, '', stateUrl(state, location.href));
     return { state, error: '' };
   } catch (error) {
     return {
