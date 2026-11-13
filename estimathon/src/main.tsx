@@ -24,7 +24,7 @@ import {
   type Pair,
   type State,
 } from './game';
-import { SAMPLES } from './sample';
+import { SAMPLE } from './sample';
 import { BuilderGuide } from './BuilderGuide';
 import { LONG_URL, readUrl, stateUrl } from './url';
 import './style.css';
@@ -347,8 +347,8 @@ function App() {
   if (error) {
     content = (
       <section className="narrow empty-state">
-        <p className="eyebrow">A little detour</p>
-        {h1('This link needs another guess.')}
+        <p className="eyebrow">Invalid link</p>
+        {h1('Unable to open this game.')}
         <p>{error}</p>
         <button className="primary" onClick={() => navigate(null)}>
           Go to Estimathon
@@ -360,7 +360,6 @@ function App() {
       <>
         <section className="landing">
           <div className="landing-copy">
-            <p className="eyebrow">A little knowledge. A little intuition.</p>
             {h1(
               <>
                 Estima<span>thon</span>
@@ -368,24 +367,22 @@ function App() {
               </>,
               'hero-title',
             )}
-            <p className="intro">How close can you get?</p>
             <p className="lede">
               Answer five numerical questions with a lower and upper bound. Aim for narrow ranges
               that contain the correct answers. The lowest score wins.
             </p>
             <div className="actions">
-              <a className="primary-link" href="#sample-games">
-                Find your first game <span aria-hidden="true">↗</span>
+              <a className="primary-link" href={stateUrl(startPlaying(SAMPLE), location.href)}>
+                Just play example <span aria-hidden="true">↗</span>
               </a>
               <button onClick={() => navigate(newBuilder())}>
                 Create a game <span aria-hidden="true">＋</span>
               </button>
             </div>
-            <p className="small">5 questions · No timer · No sign-up</p>
           </div>
           <div className="example">
             <div className="example-top">
-              <span className="example-label">The art of a good guess</span>
+              <span className="example-label">Example estimate</span>
               <span className="small">01 / 05</span>
             </div>
             <h2>How many unit squares are on a standard chessboard?</h2>
@@ -407,36 +404,9 @@ function App() {
               <span className="line-answer">64</span>
             </div>
             <div className="example-bottom">
-              <span className="example-success">✓ Nailed it. The answer is 64.</span>
+              <span className="example-success">✓ The answer is 64.</span>
               <span>80 ÷ 60 ≈ 1.33×</span>
             </div>
-          </div>
-        </section>
-        <section className="sample-games" id="sample-games" aria-labelledby="sample-games-heading">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow">Pick your curiosity</p>
-              <h2 id="sample-games-heading">A good place to start.</h2>
-            </div>
-            <span className="small">Five questions in every game</span>
-          </div>
-          <p className="lede">A world of numbers. Take your best guess.</p>
-          <div className="sample-grid">
-            {SAMPLES.map(({ game, description }, index) => (
-              <article className="sample-card" key={game.t}>
-                <div className="sample-top">
-                  <span className="sample-symbol" aria-hidden="true">
-                    {['↔', '✳', '≈'][index]}
-                  </span>
-                  <span className="eyebrow">0{index + 1} / Estimathon</span>
-                </div>
-                <h3>{game.t}</h3>
-                <p>{description}</p>
-                <button onClick={() => navigate(startPlaying(game))} aria-label={`Play ${game.t}`}>
-                  Play game <span aria-hidden="true">↗</span>
-                </button>
-              </article>
-            ))}
           </div>
         </section>
         <section className="how-to-play" aria-labelledby="how-to-play-heading">
@@ -484,11 +454,11 @@ function App() {
     content = (
       <section className="narrow builder">
         <p className="eyebrow">The game builder</p>
-        {h1('Curiosity, in five questions.')}
-        <p className="lede">Pick your questions. Set the answers. Send a little challenge.</p>
+        {h1('Create a game')}
+        <p className="lede">Enter five questions and their answers, then share your game.</p>
         <details className="builder-help">
           <summary>
-            Need a hand creating your game? <span aria-hidden="true">＋</span>
+            How to create a game <span aria-hidden="true">＋</span>
           </summary>
           <BuilderGuide />
         </details>
@@ -582,11 +552,9 @@ function App() {
   } else if (state.m === 'game') {
     content = (
       <section className="narrow ready">
-        <p className="eyebrow">
-          {state.preview ? 'Ready to pass it on' : 'An invitation to estimate'}
-        </p>
+        <p className="eyebrow">{state.preview ? 'Game preview' : 'Shared game'}</p>
         {h1(title(state))}
-        <p className="lede">Five questions. Your best bounds. How close can you get?</p>
+        <p className="lede">Enter a lower and upper bound for each answer. The lowest score wins.</p>
         <div className="game-facts">
           <span>5 questions</span>
           <span>No timer</span>
