@@ -32,7 +32,10 @@ import './style.css';
 type Route = { state: State | null; error: string };
 function load(): Route {
   try {
-    return { state: readUrl(location.href), error: '' };
+    const state = readUrl(location.href);
+    if (state && new URL(location.href).searchParams.has('d'))
+      history.replaceState(null, '', stateUrl(state, location.href));
+    return { state, error: '' };
   } catch (error) {
     return {
       state: null,

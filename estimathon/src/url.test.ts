@@ -45,8 +45,8 @@ describe('versioned, compressed URL state', () => {
     (state) => {
       expect(decode(encode(state))).toEqual(state);
       const url = stateUrl(state, 'https://tianyuqi.github.io/estimathon/?old=data#fragment');
-      expect(url).toMatch(/^https:\/\/tianyuqi.github.io\/estimathon\/\?d=/);
-      expect(new URL(url).hash).toBe('');
+      expect(url).toMatch(/^https:\/\/tianyuqi.github.io\/estimathon\/#d=/);
+      expect(new URL(url).search).toBe('');
       expect(readUrl(url)).toEqual(state);
       if (state.q[0][0]) expect(url).not.toContain(state.q[0][0]);
     },
@@ -65,7 +65,30 @@ describe('versioned, compressed URL state', () => {
       finished,
     );
     expect(readUrl('https://example.com/estimathon/')).toBeNull();
-    expect(stateUrl(null, 'https://example.com/old?d=x')).toBe('https://example.com/estimathon/');
+    expect(stateUrl(null, 'https://example.com/old?d=x#d=y')).toBe('https://example.com/estimathon/');
+  });
+  it('reads legacy query links and rewrites them without query data', () => {
+    const legacy = new URL('https://example.com/estimathon/');
+    legacy.searchParams.set('d', encode(SAMPLE));
+    expect(readUrl(legacy.href)).toEqual(SAMPLE);
+    const rewritten = stateUrl(readUrl(legacy.href), legacy.href);
+    expect(new URL(rewritten).search).toBe('');
+    expect(readUrl(rewritten)).toEqual(SAMPLE);
+  });
+  it('prefers fragment state over legacy query data without hiding invalid fragments', () => {
+    const url = stateUrl(finished, 'https://example.com');
+    const mixed = new URL(url);
+    mixed.searchParams.set('d', encode(SAMPLE));
+    expect(readUrl(mixed.href)).toEqual(finished);
+    mixed.hash = 'd=broken';
+    expect(() => readUrl(mixed.href)).toThrow();
+    mixed.hash = 'd=';
+    expect(() => readUrl(mixed.href)).toThrow();
+  });
+  it('ignores unrelated query and fragment parameters', () => {
+    expect(readUrl('https://example.com/estimathon/?topic=space#help')).toBeNull();
+    const url = stateUrl(SAMPLE, 'https://example.com');
+    expect(readUrl(`${url}&view=game`)).toEqual(SAMPLE);
   });
   it('recomputes results and discards unknown fields rather than trusting supplied scores', () => {
     expect(
@@ -93,8 +116,8 @@ describe('malformed and excessive input', () => {
   });
   it('explains unsupported versions', () =>
     expect(() => decode(pack({ ...SAMPLE, v: 9 }))).toThrow('unsupported version'));
-  it('rejects duplicate query parameters', () =>
-    expect(() => readUrl(`https://example.com/?d=${encode(SAMPLE)}&d=other`)).toThrow('duplicate'));
+  it.each(['?', '#'])('rejects duplicate data parameters in %s', (prefix) =>
+    expect(() => readUrl(`https://example.com/${prefix}d=${encode(SAMPLE)}&d=other`)).toThrow('duplicate'));
   it('allows invalid drafts, but validates all published questions and finished intervals', () => {
     expect(validateState(newBuilder())).toEqual(newBuilder());
     expect(() => encode({ ...SAMPLE, q: SAMPLE.q.map((q) => [q[0], '0']) })).toThrow();
