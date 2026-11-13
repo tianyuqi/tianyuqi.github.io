@@ -24,7 +24,7 @@ import {
   type Pair,
   type State,
 } from './game';
-import { SAMPLES } from './sample';
+import { SAMPLE } from './sample';
 import { BuilderGuide } from './BuilderGuide';
 import { LONG_URL, readUrl, stateUrl } from './url';
 import './style.css';
@@ -34,7 +34,10 @@ function load(): Route {
   try {
     return { state: readUrl(location.href), error: '' };
   } catch (error) {
-    return { state: null, error: error instanceof Error ? error.message : 'Unable to open this link.' };
+    return {
+      state: null,
+      error: error instanceof Error ? error.message : 'Unable to open this link.',
+    };
   }
 }
 function useUrlState() {
@@ -136,8 +139,8 @@ function Scoring() {
       </summary>
       <div className="scoring-content">
         <p>
-          Keep the correct answer inside your interval. The narrower, the better. Bounds are inclusive, and
-          equal bounds are allowed.
+          Keep the correct answer inside your interval. The narrower, the better. Bounds are
+          inclusive, and equal bounds are allowed.
         </p>
         <ul>
           <li>
@@ -170,7 +173,9 @@ function Circles({ q, a }: { q: Pair[]; a: Pair[] }) {
     <div
       className="circles"
       role="img"
-      aria-label={result.intervals.map((interval, i) => `Question ${i + 1}: ${interval.status}`).join(', ')}
+      aria-label={result.intervals
+        .map((interval, i) => `Question ${i + 1}: ${interval.status}`)
+        .join(', ')}
     >
       {result.intervals.map((interval, i) => (
         <span key={i} aria-hidden="true">
@@ -185,7 +190,7 @@ function Breakdown({ state }: { state: State }) {
   return (
     <div className="breakdown">
       {state.q.map(([question, answer], i) => (
-        <article className="answer-card" key={i}>
+        <article className={`answer-card answer-card--${result.intervals[i].status}`} key={i}>
           <div className="answer-title">
             <span className="eyebrow">Question 0{i + 1}</span>
             <span className="status">
@@ -220,7 +225,11 @@ function Comparison({ state }: { state: State }) {
     yours = scoreGame(state.q, state.a!);
   const name = playerName(opponent.p);
   const verdict =
-    yours.total === theirs.total ? 'It’s a tie!' : yours.total < theirs.total ? 'You win!' : `${name} wins!`;
+    yours.total === theirs.total
+      ? 'It’s a tie!'
+      : yours.total < theirs.total
+        ? 'You win!'
+        : `${name} wins!`;
   return (
     <section className="comparison">
       <div className="section-heading">
@@ -338,8 +347,8 @@ function App() {
   if (error) {
     content = (
       <section className="narrow empty-state">
-        <p className="eyebrow">A little detour</p>
-        {h1('This link needs another guess.')}
+        <p className="eyebrow">Invalid link</p>
+        {h1('Unable to open this game.')}
         <p>{error}</p>
         <button className="primary" onClick={() => navigate(null)}>
           Go to Estimathon
@@ -351,31 +360,32 @@ function App() {
       <>
         <section className="landing">
           <div className="landing-copy">
-            <p className="eyebrow">A five-question estimation game</p>
-            {h1('Estimathon', 'hero-title')}
-            <p className="intro">
-              Estimate a range for each answer.
-            </p>
+            {h1(
+              <>
+                Estima<span>thon</span>
+                <span className="hero-dot">.</span>
+              </>,
+              'hero-title',
+            )}
             <p className="lede">
-              Answer five numerical questions with a lower and upper bound. Aim for narrow ranges that
-              contain the correct answers. The lowest score wins.
+              Answer five numerical questions with a lower and upper bound. Aim for narrow ranges
+              that contain the correct answers. The lowest score wins.
             </p>
             <div className="actions">
-              <button className="primary" onClick={() => navigate(newBuilder())}>
-                Create a Game <span aria-hidden="true">↗</span>
+              <a className="primary-link" href={stateUrl(startPlaying(SAMPLE), location.href)}>
+                Just play example <span aria-hidden="true">↗</span>
+              </a>
+              <button onClick={() => navigate(newBuilder())}>
+                Create a game <span aria-hidden="true">＋</span>
               </button>
-              <a href="#sample-games">Try a sample game</a>
             </div>
-            <p className="small">Add five questions and answers, then share a link. No sign-up required.</p>
           </div>
           <div className="example">
             <div className="example-top">
-              <span className="eyebrow">Example answer</span>
+              <span className="example-label">Example estimate</span>
               <span className="small">01 / 05</span>
             </div>
-            <h2>
-              How many unit squares are on a standard chessboard?
-            </h2>
+            <h2>How many unit squares are on a standard chessboard?</h2>
             <div className="example-bounds">
               <div>
                 <span>Lower bound</span>
@@ -394,7 +404,7 @@ function App() {
               <span className="line-answer">64</span>
             </div>
             <div className="example-bottom">
-              <span>🟢 64 is within 60–80.</span>
+              <span className="example-success">✓ The answer is 64.</span>
               <span>80 ÷ 60 ≈ 1.33×</span>
             </div>
           </div>
@@ -411,32 +421,19 @@ function App() {
             <div>
               <span className="eyebrow">02 / Check your score</span>
               <p>
-                Narrower correct ranges score better. Every miss doubles your score. Lower is better.
+                Narrower correct ranges score better. Every miss doubles your score. Lower is
+                better.
               </p>
             </div>
             <div>
               <span className="eyebrow">03 / Challenge friends</span>
               <p>
-                Share your results and a link so friends can play the same five questions and compare scores.
+                Share your results and a link so friends can play the same five questions and
+                compare scores.
               </p>
             </div>
           </div>
           <Scoring />
-        </section>
-        <section className="sample-games" id="sample-games" aria-labelledby="sample-games-heading">
-          <h2 id="sample-games-heading">Sample games</h2>
-          <p className="lede">Choose a topic to try a game. Each has five questions.</p>
-          <div className="sample-grid">
-            {SAMPLES.map(({ game, description }) => (
-              <article className="sample-card" key={game.t}>
-                <h3>{game.t}</h3>
-                <p>{description}</p>
-                <button onClick={() => navigate(startPlaying(game))} aria-label={`Play ${game.t}`}>
-                  Play game <span aria-hidden="true">↗</span>
-                </button>
-              </article>
-            ))}
-          </div>
         </section>
       </>
     );
@@ -457,9 +454,14 @@ function App() {
     content = (
       <section className="narrow builder">
         <p className="eyebrow">The game builder</p>
-        {h1('Curiosity, in five questions.')}
-        <p className="lede">Pick your questions. Set the answers. Send a little challenge.</p>
-        <BuilderGuide />
+        {h1('Create a game')}
+        <p className="lede">Enter five questions and their answers, then share your game.</p>
+        <details className="builder-help">
+          <summary>
+            How to create a game <span aria-hidden="true">＋</span>
+          </summary>
+          <BuilderGuide />
+        </details>
         <form
           noValidate
           onSubmit={(event) => {
@@ -541,16 +543,18 @@ function App() {
               Back to Home
             </button>
           </div>
-          <p className="small">Your draft stays in this URL. Bookmark or copy the address to save it.</p>
+          <p className="small">
+            Your draft stays in this URL. Bookmark or copy the address to save it.
+          </p>
         </form>
       </section>
     );
   } else if (state.m === 'game') {
     content = (
       <section className="narrow ready">
-        <p className="eyebrow">{state.preview ? 'Ready to pass it on' : 'An invitation to estimate'}</p>
+        <p className="eyebrow">{state.preview ? 'Game preview' : 'Shared game'}</p>
         {h1(title(state))}
-        <p className="lede">Five questions. Your best bounds. How close can you get?</p>
+        <p className="lede">Enter a lower and upper bound for each answer. The lowest score wins.</p>
         <div className="game-facts">
           <span>5 questions</span>
           <span>No timer</span>
@@ -561,12 +565,17 @@ function App() {
             {state.preview ? 'Preview Game' : 'Play Game'} <span aria-hidden="true">↗</span>
           </button>
           <button
-            onClick={() => void copy(stateUrl(gameLinkState(state), location.href), 'Game link copied!')}
+            onClick={() =>
+              void copy(stateUrl(gameLinkState(state), location.href), 'Game link copied!')
+            }
           >
             Copy Game Link
           </button>
         </div>
-        <button className="text-button" onClick={() => navigate({ ...gameLinkState(state), m: 'builder' })}>
+        <button
+          className="text-button"
+          onClick={() => navigate({ ...gameLinkState(state), m: 'builder' })}
+        >
           Edit Questions
         </button>
         <Scoring />
@@ -606,7 +615,9 @@ function App() {
             <span
               key={index}
               className={`${index === i ? 'current' : ''} ${!intervalError(pair) ? 'done' : ''}`}
-            />
+            >
+              {!intervalError(pair) && index !== i ? '✓' : String(index + 1).padStart(2, '0')}
+            </span>
           ))}
         </div>
         {state.o && (
@@ -615,7 +626,9 @@ function App() {
           </p>
         )}
         {h1(state.q[i][0], 'question-heading')}
-        <p className="bound-hint">Find the range. Make it count.</p>
+        <p className="bound-hint">
+          Set your lower and upper bounds. A narrower correct range scores better.
+        </p>
         <form
           noValidate
           onSubmit={(event) => {
@@ -623,7 +636,13 @@ function App() {
             if (i < 4) next();
             else {
               setAttempted(true);
-              if (completeAnswers(a)) navigate({ ...state, m: 'result', reveal: true, preview: undefined });
+              if (completeAnswers(a))
+                navigate({
+                  ...state,
+                  m: 'result',
+                  reveal: true,
+                  preview: undefined,
+                });
             }
           }}
         >
@@ -646,6 +665,12 @@ function App() {
               error={attempted || bounds[1] ? integerError(bounds[1]) : ''}
             />
           </div>
+          {!validation && (
+            <p className="range-feedback" role="status">
+              Your range spans {formatRatio(bounds)}{' '}
+              <span>· Narrower is better, if the answer is inside.</span>
+            </p>
+          )}
           {validation && bounds.every(validInteger) && (
             <p className="error" role="alert">
               {validation}
@@ -669,13 +694,18 @@ function App() {
               <p className="small">Submitting locks your estimates and reveals the answers.</p>
               {attempted && !completeAnswers(a) && (
                 <p className="error" role="alert">
-                  Complete all five intervals before submitting. Use Previous to review earlier questions.
+                  Complete all five intervals before submitting. Use Previous to review earlier
+                  questions.
                 </p>
               )}
             </div>
           )}
           <div className="play-actions">
-            <button type="button" disabled={i === 0} onClick={() => navigate({ ...state, i: i - 1 })}>
+            <button
+              type="button"
+              disabled={i === 0}
+              onClick={() => navigate({ ...state, i: i - 1 })}
+            >
               ← Previous
             </button>
             {i < 4 ? (
@@ -695,7 +725,10 @@ function App() {
         </form>
         <p className="small save-note">Progress lives in your URL. Refresh anytime.</p>
         {state.preview && (
-          <button className="text-button" onClick={() => navigate({ ...gameLinkState(state), m: 'builder' })}>
+          <button
+            className="text-button"
+            onClick={() => navigate({ ...gameLinkState(state), m: 'builder' })}
+          >
             Edit Questions
           </button>
         )}
@@ -726,7 +759,10 @@ function App() {
         </div>
         <details className="spoiler">
           <summary>View {playerName(state.p)}’s Answers</summary>
-          <p>Spoiler warning: this reveals all five correct answers and their intervals before you play.</p>
+          <p>
+            Spoiler warning: this reveals all five correct answers and their intervals before you
+            play.
+          </p>
           <button onClick={() => navigate({ ...state, reveal: true })}>Reveal Results</button>
         </details>
         <Scoring />
@@ -739,13 +775,14 @@ function App() {
         <div className="result-intro">
           <div>
             <p className="eyebrow">
-              {title(state)} · {state.p?.trim() ? `${state.p.trim()}’s results` : 'The results are in'}
+              {title(state)} ·{' '}
+              {state.p?.trim() ? `${state.p.trim()}’s results` : 'The results are in'}
             </p>
             {h1('Every guess counts.')}
             <Circles q={state.q} a={state.a!} />
             <p className="counts">
-              {result.counts.green} 🟢 Green <span>·</span> {result.counts.yellow} 🟡 Yellow <span>·</span>{' '}
-              {result.counts.red} 🔴 Red
+              {result.counts.green} 🟢 Green <span>·</span> {result.counts.yellow} 🟡 Yellow{' '}
+              <span>·</span> {result.counts.red} 🔴 Red
             </p>
           </div>
           <div className="score-box">
@@ -783,14 +820,18 @@ function App() {
       </a>
       <SiteHeader />
       <main id="main">
-        {state && <button className="text-button" onClick={() => navigate(null)}>← Estimathon home</button>}
+        {state && (
+          <button className="text-button" onClick={() => navigate(null)}>
+            ← Estimathon home
+          </button>
+        )}
         {content}
         <div className="notices" aria-live="polite">
           {notice && <p className="notice">{notice}</p>}
           {urlLength > LONG_URL && (
             <p className="warning">
-              This link is unusually long. Some messaging apps may cut it off; shorter questions make it
-              easier to share.
+              This link is unusually long. Some messaging apps may cut it off; shorter questions
+              make it easier to share.
             </p>
           )}
         </div>
