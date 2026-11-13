@@ -32,7 +32,9 @@ import './style.css';
 type Route = { state: State | null; error: string };
 function load(): Route {
   try {
-    return { state: readUrl(location.href), error: '' };
+    const state = readUrl(location.href);
+    if (state?.m === 'game' && history.state?.estimathonPreview === true) state.preview = true;
+    return { state, error: '' };
   } catch (error) {
     return {
       state: null,
@@ -75,7 +77,11 @@ function useUrlState() {
       const url = stateUrl(state, location.href);
       if (push) {
         flush();
-        history.pushState(null, '', url);
+        history.pushState(
+          state?.m === 'game' && state.preview ? { estimathonPreview: true } : null,
+          '',
+          url,
+        );
         window.scrollTo({ top: 0, behavior: 'instant' });
       } else {
         clearTimeout(timer.current);
