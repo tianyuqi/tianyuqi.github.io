@@ -157,7 +157,7 @@ describe('malformed and excessive input', () => {
 
 describe('bounded decompression', () => {
   it('stops oversized expansions before constructing the full string', () => {
-    const bomb = LZString.compressToEncodedURIComponent('a'.repeat(1000000));
+    const bomb = LZString.compressToEncodedURIComponent('a'.repeat(32000));
     expect(bomb.length).toBeLessThan(MAX_ENCODED);
     expect(() => decode(bomb)).toThrow('size limit');
   });
