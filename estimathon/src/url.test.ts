@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import LZString from 'lz-string';
 import { decompressBounded } from './decompress';
-import { emptyPairs, newBuilder, resultLinkState, startPlaying, type State } from './game';
+import { emptyPairs, gameLinkState, newBuilder, resultLinkState, startPlaying, type State } from './game';
 import { SAMPLE, SAMPLES } from './sample';
 import { decode, encode, MAX_ENCODED, readUrl, stateUrl, validateState } from './url';
 
@@ -24,6 +24,7 @@ describe('versioned, compressed URL state', () => {
     },
     ...SAMPLES.map(({ game }) => game),
     { ...SAMPLE, preview: true },
+    startPlaying({ ...SAMPLE, preview: true }),
     {
       ...startPlaying(SAMPLE),
       i: 3,
@@ -47,7 +48,7 @@ describe('versioned, compressed URL state', () => {
       const url = stateUrl(state, 'https://tianyuqi.github.io/estimathon/?old=data#fragment');
       expect(url).toMatch(/^https:\/\/tianyuqi.github.io\/estimathon\/#d=/);
       expect(new URL(url).search).toBe('');
-      expect(readUrl(url)).toEqual(state);
+      expect(readUrl(url)).toEqual(state.m === 'game' ? gameLinkState(state) : state);
       if (state.q[0][0]) expect(url).not.toContain(state.q[0][0]);
     },
   );
@@ -89,6 +90,28 @@ describe('versioned, compressed URL state', () => {
     expect(readUrl('https://example.com/estimathon/?topic=space#help')).toBeNull();
     const url = stateUrl(SAMPLE, 'https://example.com');
     expect(readUrl(`${url}&view=game`)).toEqual(SAMPLE);
+  });
+  it('publishes playable game URLs while keeping the author preview state intact', () => {
+    const preview: State = { ...SAMPLE, preview: true };
+    const url = stateUrl(preview, 'https://tianyuqi.github.io');
+    expect(decode(new URLSearchParams(new URL(url).hash.slice(1)).get('d')!)).toEqual(SAMPLE);
+    expect(startPlaying(readUrl(url)!).preview).toBeUndefined();
+    expect(startPlaying(preview).preview).toBe(true);
+    expect(preview.preview).toBe(true);
+  });
+  it('opens the reported legacy preview URL as the intended playable Growth Metrics game', () => {
+    const url = 'https://tianyuqi.github.io/estimathon/?d=N4IgbiBcCMA0IFsogOYEMEFMTwC7IHEAnAewHdcALAAgFlNciBLAYwGccQBHKAbV5AAJctQRoAdgE9q4zGWpkSRANZsADmhaY2CzEUzUW%2BtLkwATak3HUqBxmiYAbKymoB2ambSSdACgAqlEw6ZJiYygCUAPycAMwAbAAM0ACcIAC6sALC8mJS1Jq4TGAGAK5sejq6%2BtT6LEpm5pbWtjZEDs7irh5ePtQBQSFhkTHwKakALLHQGVlCInnSVmBMpkM1mlpqphZWNpR27U4u7p7efoHBuuHRnNAATA%2BJswIA6pQmCmg6uCS4aI4CuJxKUAbVMCxSkRmF1wSUQQY9mYSI5HGgiBdBtdlIYUaUEOJbvBoBMABwTCnxKYvea5CTSRhMMFsf5EXDrAx1BpNPatezHWE9c79S5DG6jEATACsUoymRAan0KzkUEYpUwAF8gA';
+    const legacy = decode(new URL(url).searchParams.get('d')!);
+    expect(legacy.preview).toBe(true);
+    const game = readUrl(url)!;
+    expect(game).toEqual(gameLinkState(legacy));
+    expect(game.t).toBe('Growth Metrics');
+    expect(game.q.map(([, answer]) => answer)).toEqual(['36019', '919431', '12120', '148444643', '455']);
+    const playing = startPlaying(game);
+    expect(playing.m).toBe('playing');
+    expect(playing.preview).toBeUndefined();
+    expect(playing.a).toEqual(emptyPairs());
+    expect(playing.i).toBe(0);
   });
   it('recomputes results and discards unknown fields rather than trusting supplied scores', () => {
     expect(

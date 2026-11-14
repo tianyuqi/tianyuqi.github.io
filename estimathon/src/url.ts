@@ -1,6 +1,6 @@
 import LZString from 'lz-string';
 import { decompressBounded } from './decompress';
-import { completeAnswers, completeQuestions, LIMITS, type Pair, type State } from './game';
+import { completeAnswers, completeQuestions, gameLinkState, LIMITS, type Pair, type State } from './game';
 
 export const MAX_ENCODED = 12000;
 const MAX_JSON = 16000;
@@ -88,7 +88,11 @@ export function decode(encoded: string): State {
 }
 export function stateUrl(state: State | null, base: string): string {
   const url = new URL('/estimathon/', base);
-  if (state) url.hash = new URLSearchParams({ d: encode(state) }).toString();
+  // Author preview belongs to the local history entry, not the published game URL.
+  if (state)
+    url.hash = new URLSearchParams({
+      d: encode(state.m === 'game' ? gameLinkState(state) : state),
+    }).toString();
   return url.href;
 }
 export function readUrl(url: string): State | null {
@@ -98,5 +102,7 @@ export function readUrl(url: string): State | null {
   const params = fragment.has('d') ? fragment : parsed.searchParams;
   if (!params.has('d')) return null;
   if (params.getAll('d').length !== 1) throw new Error('This game link contains duplicate data.');
-  return decode(params.get('d')!);
+  const state = decode(params.get('d')!);
+  // Older published URLs can carry the author's preview flag. Recipients should play.
+  return state.m === 'game' ? gameLinkState(state) : state;
 }

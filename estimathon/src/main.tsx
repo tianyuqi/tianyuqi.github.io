@@ -33,8 +33,9 @@ type Route = { state: State | null; error: string };
 function load(): Route {
   try {
     const state = readUrl(location.href);
+    if (state?.m === 'game' && history.state?.estimathonPreview === true) state.preview = true;
     if (state && new URL(location.href).searchParams.has('d'))
-      history.replaceState(null, '', stateUrl(state, location.href));
+      history.replaceState(history.state, '', stateUrl(state, location.href));
     return { state, error: '' };
   } catch (error) {
     return {
@@ -78,7 +79,11 @@ function useUrlState() {
       const url = stateUrl(state, location.href);
       if (push) {
         flush();
-        history.pushState(null, '', url);
+        history.pushState(
+          state?.m === 'game' && state.preview ? { estimathonPreview: true } : null,
+          '',
+          url,
+        );
         window.scrollTo({ top: 0, behavior: 'instant' });
       } else {
         clearTimeout(timer.current);
