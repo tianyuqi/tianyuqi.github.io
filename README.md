@@ -14,7 +14,7 @@ The seeded generator constructs candidate boards from edge matchings, then uses 
 
 To deploy, select **GitHub Actions** under the repository’s **Settings → Pages → Build and deployment → Source**, then merge to `main` (or run the “Build and deploy website” workflow). The workflow tests and builds all four games, copies all existing site pages, assets, posts, and PDFs unchanged, and deploys `_site/` with the games under `/hex-pairs/`, `/estimathon/`, `/homebuyer/`, and `/number-hunt/`. Pull requests build and test without deploying. No backend, API keys, or custom domain changes are needed.
 
-Estimathon is an entirely client-side estimation game at **https://tianyuqi.github.io/estimathon/**, also linked from Home and Projects. Players create or play exactly five questions, then share a score and challenge friends to the same questions.
+Estimathon is an entirely client-side estimation game at **https://tianyuqi.github.io/estimathon/**, also linked from Home and Projects. Players create or play 13 questions, then share a score and challenge friends to the same questions.
 
 - `npm run dev:estimathon` serves it at http://localhost:5173/estimathon/.
 - `npm test -- estimathon/src` tests validation, exact scoring, compressed serialization, URL round-tripping, and challenge sharing.

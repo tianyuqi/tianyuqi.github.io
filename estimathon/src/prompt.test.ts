@@ -25,7 +25,7 @@ describe('copyable game generation prompt', () => {
       expect(state.m).toBe('game');
       expect(state.v).toBe(1);
       expect(state.t).toBe('A question of scale');
-      expect(state.q).toHaveLength(5);
+      expect(state.q).toHaveLength(13);
       expect(state.q[0][1]).toBe('204');
       expect(prompt).toContain('instead of inventing a URL');
     },

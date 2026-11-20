@@ -2,6 +2,9 @@ import { SiteHeader } from '../../shared/SiteHeader';
 import { StrictMode, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
+  answerError,
+  blankInterval,
+  builderState,
   completeAnswers,
   completeQuestions,
   EMOJI,
@@ -15,6 +18,7 @@ import {
   newBuilder,
   playerName,
   questionErrors,
+  QUESTION_COUNT,
   resultLinkState,
   scoreGame,
   shareText,
@@ -158,15 +162,25 @@ function Scoring() {
             🟡 <strong>Yellow</strong> — contains the answer; upper ÷ lower is greater than 2.
           </li>
           <li>
-            🔴 <strong>Red</strong> — misses the answer.
+            🔴 <strong>Red</strong> — misses the answer or is left blank.
           </li>
         </ul>
         <p>
-          For each correct interval, round upper ÷ lower up to the next integer. Your score is{' '}
+          For each correct interval, round upper ÷ lower down to a whole number. Your score is{' '}
           <strong>
             (10 + sum of correct interval scores) × 2<sup>misses</sup>
           </strong>
-          . Every miss doubles your score. Lower is better.
+          . Every wrong or blank answer doubles your score. Lower is better.
+        </p>
+        <p>
+          Play from your own knowledge: no internet, calculators, or external references. You can
+          revise your ranges before the final submission; leave both bounds empty to skip.
+        </p>
+        <p className="small">
+          This adaptation has no timer and one final submission. The{' '}
+          <a href="https://estimathon.com/how-to-play">official rules</a> use teams, 13 problems,
+          30 minutes, and up to 18 interval submissions, with the latest interval counting. The
+          green/yellow distinction is a visual aid for this version.
         </p>
         <p className="small">
           For an answer of 100: [90, 110] is green, [10, 1,000] is yellow, and [110, 200] is red.
@@ -200,7 +214,7 @@ function Breakdown({ state }: { state: State }) {
       {state.q.map(([question, answer], i) => (
         <article className={`answer-card answer-card--${result.intervals[i].status}`} key={i}>
           <div className="answer-title">
-            <span className="eyebrow">Question 0{i + 1}</span>
+            <span className="eyebrow">Question {String(i + 1).padStart(2, '0')}</span>
             <span className="status">
               {EMOJI[result.intervals[i].status]} {result.intervals[i].status}
             </span>
@@ -214,12 +228,14 @@ function Breakdown({ state }: { state: State }) {
             <div>
               <dt>Submitted interval</dt>
               <dd>
-                {formatInteger(state.a![i][0])}–{formatInteger(state.a![i][1])}
+                {blankInterval(state.a![i])
+                  ? 'Left blank'
+                  : `${formatInteger(state.a![i][0])}–${formatInteger(state.a![i][1])}`}
               </dd>
             </div>
             <div>
               <dt>Interval ratio</dt>
-              <dd>{formatRatio(state.a![i])}</dd>
+              <dd>{blankInterval(state.a![i]) ? '—' : formatRatio(state.a![i])}</dd>
             </div>
           </dl>
         </article>
@@ -275,7 +291,9 @@ function Comparison({ state }: { state: State }) {
               <span>
                 {EMOJI[theirs.intervals[i].status]}{' '}
                 <span className="sr-only">{theirs.intervals[i].status}: </span>
-                {formatInteger(opponent.a[i][0])}–{formatInteger(opponent.a[i][1])}
+                {blankInterval(opponent.a[i])
+                  ? 'Left blank'
+                  : `${formatInteger(opponent.a[i][0])}–${formatInteger(opponent.a[i][1])}`}
               </span>
             </span>
             <span role="cell">
@@ -283,7 +301,9 @@ function Comparison({ state }: { state: State }) {
               <span>
                 {EMOJI[yours.intervals[i].status]}{' '}
                 <span className="sr-only">{yours.intervals[i].status}: </span>
-                {formatInteger(state.a![i][0])}–{formatInteger(state.a![i][1])}
+                {blankInterval(state.a![i])
+                  ? 'Left blank'
+                  : `${formatInteger(state.a![i][0])}–${formatInteger(state.a![i][1])}`}
               </span>
             </span>
             <span role="cell">
@@ -376,12 +396,16 @@ function App() {
               'hero-title',
             )}
             <p className="lede">
-              Answer five numerical questions with a lower and upper bound. Aim for narrow ranges
+              Answer 13 numerical questions with a lower and upper bound. Aim for narrow ranges
               that contain the correct answers. The lowest score wins.
+            </p>
+            <p className="small">
+              A 13-question adaptation of{' '}
+              <a href="https://estimathon.com/">Jane Street’s Estimathon</a>.
             </p>
             <div className="actions">
               <a className="primary-link" href={stateUrl(startPlaying(SAMPLE), location.href)}>
-                Just play example <span aria-hidden="true">↗</span>
+                Play example <span aria-hidden="true">↗</span>
               </a>
               <button onClick={() => navigate(newBuilder())}>
                 Create a game <span aria-hidden="true">＋</span>
@@ -391,7 +415,7 @@ function App() {
           <div className="example">
             <div className="example-top">
               <span className="example-label">Example estimate</span>
-              <span className="small">01 / 05</span>
+              <span className="small">01 / {QUESTION_COUNT}</span>
             </div>
             <h2>How many unit squares are on a standard chessboard?</h2>
             <div className="example-bounds">
@@ -429,14 +453,14 @@ function App() {
             <div>
               <span className="eyebrow">02 / Check your score</span>
               <p>
-                Narrower correct ranges score better. Every miss doubles your score. Lower is
-                better.
+                Narrower correct ranges score better. Wrong or blank answers double your score.
+                Lower is better.
               </p>
             </div>
             <div>
               <span className="eyebrow">03 / Challenge friends</span>
               <p>
-                Share your results and a link so friends can play the same five questions and
+                Share your results and a link so friends can play the same 13 questions and
                 compare scores.
               </p>
             </div>
@@ -463,7 +487,7 @@ function App() {
       <section className="narrow builder">
         <p className="eyebrow">The game builder</p>
         {h1('Create a game')}
-        <p className="lede">Enter five questions and their answers, then share your game.</p>
+        <p className="lede">Enter 13 questions and their answers, then share your game.</p>
         <details className="builder-help">
           <summary>
             How to create a game <span aria-hidden="true">＋</span>
@@ -490,12 +514,12 @@ function App() {
               onChange={(event) => edit({ ...state, t: event.target.value })}
             />
             <p className="small">
-              Exactly five questions. Answers must be positive whole numbers, up to 100 digits.
+              Exactly 13 questions. Answers must be positive whole numbers, up to 100 digits.
             </p>
           </div>
           {state.q.map(([question, answer], i) => (
             <fieldset className="builder-question" key={i}>
-              <legend>Question 0{i + 1}</legend>
+              <legend>Question {String(i + 1).padStart(2, '0')}</legend>
               <div className="reorder">
                 <button
                   type="button"
@@ -508,7 +532,7 @@ function App() {
                 <button
                   type="button"
                   aria-label={`Move question ${i + 1} down`}
-                  disabled={i === 4}
+                  disabled={i === state.q.length - 1}
                   onClick={() => reorder(i, 1)}
                 >
                   ↓
@@ -564,7 +588,7 @@ function App() {
         {h1(title(state))}
         <p className="lede">Enter a lower and upper bound for each answer. The lowest score wins.</p>
         <div className="game-facts">
-          <span>5 questions</span>
+          <span>{state.q.length} questions</span>
           <span>No timer</span>
           <span>Lower score wins</span>
         </div>
@@ -582,7 +606,7 @@ function App() {
         </div>
         <button
           className="text-button"
-          onClick={() => navigate({ ...gameLinkState(state), m: 'builder' })}
+          onClick={() => navigate(builderState(state))}
         >
           Edit Questions
         </button>
@@ -593,7 +617,7 @@ function App() {
     const i = state.i!,
       a = state.a!,
       bounds = a[i];
-    const validation = intervalError(bounds);
+    const validation = answerError(bounds);
     const changeBound = (side: number, value: string) =>
       edit({
         ...state,
@@ -609,14 +633,14 @@ function App() {
       <section className="narrow playing">
         <div className="play-meta">
           <p className="eyebrow">{title(state)}</p>
-          <span className="small">Question {i + 1} of 5</span>
+          <span className="small">Question {i + 1} of {state.q.length}</span>
         </div>
         <div
           className="progress"
           role="progressbar"
           aria-label="Question progress"
           aria-valuemin={1}
-          aria-valuemax={5}
+          aria-valuemax={state.q.length}
           aria-valuenow={i + 1}
         >
           {a.map((pair, index) => (
@@ -635,16 +659,17 @@ function App() {
         )}
         {h1(state.q[i][0], 'question-heading')}
         <p className="bound-hint">
-          Set your lower and upper bounds. A narrower correct range scores better.
+          Set your lower and upper bounds. A narrower correct range scores better. Leave both empty
+          to skip; a blank answer doubles your score.
         </p>
         <form
           noValidate
           onSubmit={(event) => {
             event.preventDefault();
-            if (i < 4) next();
+            if (i < state.q.length - 1) next();
             else {
               setAttempted(true);
-              if (completeAnswers(a))
+              if (completeAnswers(a, state.q.length))
                 navigate({
                   ...state,
                   m: 'result',
@@ -660,7 +685,7 @@ function App() {
               label="Lower bound"
               value={bounds[0]}
               onChange={(value) => changeBound(0, value)}
-              error={attempted || bounds[0] ? integerError(bounds[0]) : ''}
+              error={!blankInterval(bounds) && (attempted || bounds[0]) ? integerError(bounds[0]) : ''}
             />
             <span className="range-dash" aria-hidden="true">
               —
@@ -670,10 +695,10 @@ function App() {
               label="Upper bound"
               value={bounds[1]}
               onChange={(value) => changeBound(1, value)}
-              error={attempted || bounds[1] ? integerError(bounds[1]) : ''}
+              error={!blankInterval(bounds) && (attempted || bounds[1]) ? integerError(bounds[1]) : ''}
             />
           </div>
-          {!validation && (
+          {!intervalError(bounds) && (
             <p className="range-feedback" role="status">
               Your range spans {formatRatio(bounds)}{' '}
               <span>· Narrower is better, if the answer is inside.</span>
@@ -684,7 +709,7 @@ function App() {
               {validation}
             </p>
           )}
-          {i === 4 && (
+          {i === state.q.length - 1 && (
             <div className="submit-area">
               <div className="field">
                 <label htmlFor="player">
@@ -700,10 +725,10 @@ function App() {
                 />
               </div>
               <p className="small">Submitting locks your estimates and reveals the answers.</p>
-              {attempted && !completeAnswers(a) && (
+              {attempted && !completeAnswers(a, state.q.length) && (
                 <p className="error" role="alert">
-                  Complete all five intervals before submitting. Use Previous to review earlier
-                  questions.
+                  Finish each started interval or clear both bounds to leave it blank. Use Previous
+                  to review earlier questions.
                 </p>
               )}
             </div>
@@ -716,11 +741,11 @@ function App() {
             >
               ← Previous
             </button>
-            {i < 4 ? (
+            {i < state.q.length - 1 ? (
               <button className="primary" type="submit">
                 Next Question →
               </button>
-            ) : completeAnswers(a) ? (
+            ) : completeAnswers(a, state.q.length) ? (
               <button className="primary" type="submit">
                 Submit Answers ↗
               </button>
@@ -735,7 +760,7 @@ function App() {
         {state.preview && (
           <button
             className="text-button"
-            onClick={() => navigate({ ...gameLinkState(state), m: 'builder' })}
+            onClick={() => navigate(builderState(state))}
           >
             Edit Questions
           </button>
@@ -756,7 +781,7 @@ function App() {
         )}
         <Circles q={state.q} a={state.a!} />
         <p className="lede">
-          Same five questions. A fresh set of guesses.
+          Same {state.q.length} questions. A fresh set of guesses.
           <br />
           Their answers stay hidden until you finish.
         </p>
@@ -768,7 +793,7 @@ function App() {
         <details className="spoiler">
           <summary>View {playerName(state.p)}’s Answers</summary>
           <p>
-            Spoiler warning: this reveals all five correct answers and their intervals before you
+            Spoiler warning: this reveals all {state.q.length} correct answers and their intervals before you
             play.
           </p>
           <button onClick={() => navigate({ ...state, reveal: true })}>Reveal Results</button>
@@ -859,9 +884,10 @@ function App() {
       </main>
       <footer className="site-footer">
         <span>
-          Estimathon by <a href="/">Tim Qi</a>
+          Adapted by <a href="/">Tim Qi</a> from{' '}
+          <a href="https://estimathon.com/">Jane Street’s Estimathon</a>
         </span>
-        <span>Five questions. Lowest score wins.</span>
+        <span>{state?.q.length ?? QUESTION_COUNT} questions. Lowest score wins.</span>
       </footer>
     </div>
   );
