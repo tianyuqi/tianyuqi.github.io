@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import {
   answerError,
   blankInterval,
+  builderState,
   completeAnswers,
   completeQuestions,
   EMOJI,
@@ -17,6 +18,7 @@ import {
   newBuilder,
   playerName,
   questionErrors,
+  QUESTION_COUNT,
   resultLinkState,
   scoreGame,
   shareText,
@@ -175,7 +177,7 @@ function Scoring() {
           revise your ranges before the final submission; leave both bounds empty to skip.
         </p>
         <p className="small">
-          This adaptation has five questions, no timer, and one final submission. The{' '}
+          This adaptation has no timer and one final submission. The{' '}
           <a href="https://estimathon.com/how-to-play">official rules</a> use teams, 13 problems,
           30 minutes, and up to 18 interval submissions, with the latest interval counting. The
           green/yellow distinction is a visual aid for this version.
@@ -212,7 +214,7 @@ function Breakdown({ state }: { state: State }) {
       {state.q.map(([question, answer], i) => (
         <article className={`answer-card answer-card--${result.intervals[i].status}`} key={i}>
           <div className="answer-title">
-            <span className="eyebrow">Question 0{i + 1}</span>
+            <span className="eyebrow">Question {String(i + 1).padStart(2, '0')}</span>
             <span className="status">
               {EMOJI[result.intervals[i].status]} {result.intervals[i].status}
             </span>
@@ -394,16 +396,16 @@ function App() {
               'hero-title',
             )}
             <p className="lede">
-              Answer five numerical questions with a lower and upper bound. Aim for narrow ranges
+              Answer 13 numerical questions with a lower and upper bound. Aim for narrow ranges
               that contain the correct answers. The lowest score wins.
             </p>
             <p className="small">
-              A five-question adaptation of{' '}
+              A 13-question adaptation of{' '}
               <a href="https://estimathon.com/">Jane Street’s Estimathon</a>.
             </p>
             <div className="actions">
               <a className="primary-link" href={stateUrl(startPlaying(SAMPLE), location.href)}>
-                Just play example <span aria-hidden="true">↗</span>
+                Play example <span aria-hidden="true">↗</span>
               </a>
               <button onClick={() => navigate(newBuilder())}>
                 Create a game <span aria-hidden="true">＋</span>
@@ -413,7 +415,7 @@ function App() {
           <div className="example">
             <div className="example-top">
               <span className="example-label">Example estimate</span>
-              <span className="small">01 / 05</span>
+              <span className="small">01 / {QUESTION_COUNT}</span>
             </div>
             <h2>How many unit squares are on a standard chessboard?</h2>
             <div className="example-bounds">
@@ -458,7 +460,7 @@ function App() {
             <div>
               <span className="eyebrow">03 / Challenge friends</span>
               <p>
-                Share your results and a link so friends can play the same five questions and
+                Share your results and a link so friends can play the same 13 questions and
                 compare scores.
               </p>
             </div>
@@ -485,7 +487,7 @@ function App() {
       <section className="narrow builder">
         <p className="eyebrow">The game builder</p>
         {h1('Create a game')}
-        <p className="lede">Enter five questions and their answers, then share your game.</p>
+        <p className="lede">Enter 13 questions and their answers, then share your game.</p>
         <details className="builder-help">
           <summary>
             How to create a game <span aria-hidden="true">＋</span>
@@ -512,12 +514,12 @@ function App() {
               onChange={(event) => edit({ ...state, t: event.target.value })}
             />
             <p className="small">
-              Exactly five questions. Answers must be positive whole numbers, up to 100 digits.
+              Exactly 13 questions. Answers must be positive whole numbers, up to 100 digits.
             </p>
           </div>
           {state.q.map(([question, answer], i) => (
             <fieldset className="builder-question" key={i}>
-              <legend>Question 0{i + 1}</legend>
+              <legend>Question {String(i + 1).padStart(2, '0')}</legend>
               <div className="reorder">
                 <button
                   type="button"
@@ -530,7 +532,7 @@ function App() {
                 <button
                   type="button"
                   aria-label={`Move question ${i + 1} down`}
-                  disabled={i === 4}
+                  disabled={i === state.q.length - 1}
                   onClick={() => reorder(i, 1)}
                 >
                   ↓
@@ -586,7 +588,7 @@ function App() {
         {h1(title(state))}
         <p className="lede">Enter a lower and upper bound for each answer. The lowest score wins.</p>
         <div className="game-facts">
-          <span>5 questions</span>
+          <span>{state.q.length} questions</span>
           <span>No timer</span>
           <span>Lower score wins</span>
         </div>
@@ -604,7 +606,7 @@ function App() {
         </div>
         <button
           className="text-button"
-          onClick={() => navigate({ ...gameLinkState(state), m: 'builder' })}
+          onClick={() => navigate(builderState(state))}
         >
           Edit Questions
         </button>
@@ -631,14 +633,14 @@ function App() {
       <section className="narrow playing">
         <div className="play-meta">
           <p className="eyebrow">{title(state)}</p>
-          <span className="small">Question {i + 1} of 5</span>
+          <span className="small">Question {i + 1} of {state.q.length}</span>
         </div>
         <div
           className="progress"
           role="progressbar"
           aria-label="Question progress"
           aria-valuemin={1}
-          aria-valuemax={5}
+          aria-valuemax={state.q.length}
           aria-valuenow={i + 1}
         >
           {a.map((pair, index) => (
@@ -664,10 +666,10 @@ function App() {
           noValidate
           onSubmit={(event) => {
             event.preventDefault();
-            if (i < 4) next();
+            if (i < state.q.length - 1) next();
             else {
               setAttempted(true);
-              if (completeAnswers(a))
+              if (completeAnswers(a, state.q.length))
                 navigate({
                   ...state,
                   m: 'result',
@@ -707,7 +709,7 @@ function App() {
               {validation}
             </p>
           )}
-          {i === 4 && (
+          {i === state.q.length - 1 && (
             <div className="submit-area">
               <div className="field">
                 <label htmlFor="player">
@@ -723,7 +725,7 @@ function App() {
                 />
               </div>
               <p className="small">Submitting locks your estimates and reveals the answers.</p>
-              {attempted && !completeAnswers(a) && (
+              {attempted && !completeAnswers(a, state.q.length) && (
                 <p className="error" role="alert">
                   Finish each started interval or clear both bounds to leave it blank. Use Previous
                   to review earlier questions.
@@ -739,11 +741,11 @@ function App() {
             >
               ← Previous
             </button>
-            {i < 4 ? (
+            {i < state.q.length - 1 ? (
               <button className="primary" type="submit">
                 Next Question →
               </button>
-            ) : completeAnswers(a) ? (
+            ) : completeAnswers(a, state.q.length) ? (
               <button className="primary" type="submit">
                 Submit Answers ↗
               </button>
@@ -758,7 +760,7 @@ function App() {
         {state.preview && (
           <button
             className="text-button"
-            onClick={() => navigate({ ...gameLinkState(state), m: 'builder' })}
+            onClick={() => navigate(builderState(state))}
           >
             Edit Questions
           </button>
@@ -779,7 +781,7 @@ function App() {
         )}
         <Circles q={state.q} a={state.a!} />
         <p className="lede">
-          Same five questions. A fresh set of guesses.
+          Same {state.q.length} questions. A fresh set of guesses.
           <br />
           Their answers stay hidden until you finish.
         </p>
@@ -791,7 +793,7 @@ function App() {
         <details className="spoiler">
           <summary>View {playerName(state.p)}’s Answers</summary>
           <p>
-            Spoiler warning: this reveals all five correct answers and their intervals before you
+            Spoiler warning: this reveals all {state.q.length} correct answers and their intervals before you
             play.
           </p>
           <button onClick={() => navigate({ ...state, reveal: true })}>Reveal Results</button>
@@ -885,7 +887,7 @@ function App() {
           Adapted by <a href="/">Tim Qi</a> from{' '}
           <a href="https://estimathon.com/">Jane Street’s Estimathon</a>
         </span>
-        <span>Five questions. Lowest score wins.</span>
+        <span>{state?.q.length ?? QUESTION_COUNT} questions. Lowest score wins.</span>
       </footer>
     </div>
   );

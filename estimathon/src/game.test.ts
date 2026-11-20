@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   answerError,
+  builderState,
   completeAnswers,
   completeQuestions,
   emptyPairs,
@@ -11,6 +12,7 @@ import {
   intervalError,
   newBuilder,
   questionErrors,
+  QUESTION_COUNT,
   resultLinkState,
   scoreGame,
   scoreInterval,
@@ -28,10 +30,11 @@ const intervals: Pair[] = [
   ['100', '200'],
   ['300', '400'],
   ['206', '206'],
+  ...SAMPLE.q.slice(5).map(([, answer]): Pair => [answer, answer]),
 ];
 const result: State = { ...SAMPLE, m: 'result', p: 'Alex', a: intervals };
 
-describe('positive integer and five-question validation', () => {
+describe('positive integer and 13-question validation', () => {
   it.each(['1', '0001', '99999999999999999999999999999999', '9'.repeat(100)])(
     'accepts decimal integer %s',
     (value) => expect(validInteger(value)).toBe(true),
@@ -52,9 +55,9 @@ describe('positive integer and five-question validation', () => {
     '９',
     '1'.repeat(101),
   ])('rejects %s', (value) => expect(validInteger(value)).toBe(false));
-  it('requires exactly five nonempty, limited questions with valid answers', () => {
+  it('requires exactly 13 nonempty, limited questions with valid answers', () => {
     expect(completeQuestions(SAMPLE.q)).toBe(true);
-    expect(completeQuestions(SAMPLE.q.slice(0, 4))).toBe(false);
+    expect(completeQuestions(SAMPLE.q.slice(0, 12))).toBe(false);
     expect(completeQuestions([...SAMPLE.q, SAMPLE.q[0]])).toBe(false);
     expect(questionErrors(['  ', '2'])[0]).toBeTruthy();
     expect(questionErrors(['x'.repeat(201), '2'])[0]).toBeTruthy();
@@ -66,7 +69,7 @@ describe('positive integer and five-question validation', () => {
     expect(intervalError(['99999999999999999999', '99999999999999999998'])).toBeTruthy();
     expect(intervalError(['', '10'])).toBeTruthy();
     expect(completeAnswers(intervals)).toBe(true);
-    expect(completeAnswers(intervals.slice(0, 4))).toBe(false);
+    expect(completeAnswers(intervals.slice(0, 12))).toBe(false);
     expect(completeAnswers(emptyPairs())).toBe(true);
     expect(completeAnswers([['1', ''], ...intervals.slice(1)])).toBe(false);
     expect(answerError(['', ''])).toBe('');
@@ -75,6 +78,14 @@ describe('positive integer and five-question validation', () => {
 });
 
 describe('exact scoring', () => {
+  it('scores all thirteen intervals, including the final question', () => {
+    const exact: Pair[] = SAMPLE.q.map(([, answer]) => [answer, answer]);
+    expect(scoreGame(SAMPLE.q, exact).total).toBe(23n);
+    exact[12] = ['', ''];
+    expect(scoreGame(SAMPLE.q, exact).total).toBe(44n);
+    expect(scoreGame(SAMPLE.q, emptyPairs()).total).toBe(81920n);
+    expect(() => scoreGame(SAMPLE.q, exact.slice(0, 5))).toThrow();
+  });
   it.each([
     ['100', ['90', '110'], 'green', 1n],
     ['100', ['10', '1000'], 'yellow', 100n],
@@ -121,7 +132,7 @@ describe('exact scoring', () => {
         Array.from({ length: 5 }, () => ['100', '100']),
       ).total,
     ).toBe(15n);
-    expect(scoreGame(q, emptyPairs()).total).toBe(320n);
+    expect(scoreGame(q, emptyPairs(5)).total).toBe(320n);
     expect(() => scoreGame(q, [['1', ''], ...emptyPairs().slice(1)])).toThrow();
   });
   it('treats blanks exactly like misses and never scores malformed intervals', () => {
@@ -146,6 +157,12 @@ describe('exact scoring', () => {
 });
 
 describe('challenge and share data', () => {
+  it('preserves existing five-question games and expands them when editing', () => {
+    const legacy: State = { ...SAMPLE, q: SAMPLE.q.slice(0, 5) };
+    expect(startPlaying(legacy).a).toHaveLength(5);
+    expect(builderState(legacy).q).toEqual([...legacy.q, ...emptyPairs(8)]);
+    expect(newBuilder().q).toHaveLength(13);
+  });
   it('starts fresh answers while keeping just the original opponent when challenged', () => {
     const playing = startPlaying(result, true);
     expect(playing.a).toEqual(emptyPairs());
@@ -167,12 +184,13 @@ describe('challenge and share data', () => {
     expect(gameLinkState(next)).toEqual(SAMPLE);
     expect(newBuilder().q).toEqual(emptyPairs());
   });
-  it('creates a complete text summary with exactly five circles and the URL', () => {
+  it('creates a complete text summary with exactly 13 circles and the URL', () => {
     const summary = shareText(result, 'https://tianyuqi.github.io/estimathon/#d=abc');
     expect(summary).toContain("Alex's Results");
+    expect(scoreGame(SAMPLE.q, intervals).intervals).toHaveLength(QUESTION_COUNT);
     expect(summary).toContain(scoreGame(SAMPLE.q, intervals).circles);
     expect(summary).toContain(`Score: ${scoreGame(SAMPLE.q, intervals).total} (lower is better)`);
-    expect(summary).toContain('3 🟢  1 🟡  1 🔴');
+    expect(summary).toContain('11 🟢  1 🟡  1 🔴');
     expect(summary).toContain('Think you can do better?\nhttps://tianyuqi.github.io/estimathon/#d=abc');
   });
 });

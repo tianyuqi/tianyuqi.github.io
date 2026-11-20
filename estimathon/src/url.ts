@@ -1,6 +1,15 @@
 import LZString from 'lz-string';
 import { decompressBounded } from './decompress';
-import { completeAnswers, completeQuestions, gameLinkState, LIMITS, type Pair, type State } from './game';
+import {
+  builderState,
+  completeAnswers,
+  completeQuestions,
+  gameLinkState,
+  LIMITS,
+  supportedQuestionCount,
+  type Pair,
+  type State,
+} from './game';
 
 export const MAX_ENCODED = 12000;
 const MAX_JSON = 16000;
@@ -15,7 +24,7 @@ function text(value: unknown, max: number): value is string {
 function pairs(value: unknown, firstMax: number, secondMax: number): value is Pair[] {
   return (
     Array.isArray(value) &&
-    value.length === 5 &&
+    supportedQuestionCount(value.length) &&
     value.every(
       (pair) =>
         Array.isArray(pair) && pair.length === 2 && text(pair[0], firstMax) && text(pair[1], secondMax),
@@ -34,28 +43,32 @@ export function validateState(value: unknown): State {
     throw new Error('This game link is invalid or incomplete.');
   }
   const state: State = { v: 1, m: value.m as State['m'], t: value.t, q: value.q };
-  if (state.m !== 'builder' && !completeQuestions(state.q))
-    throw new Error('This game needs five valid questions.');
+  if (state.m !== 'builder' && !completeQuestions(state.q, state.q.length))
+    throw new Error('This game has invalid questions.');
   if (value.preview !== undefined) {
     if (typeof value.preview !== 'boolean') throw new Error('Invalid preview.');
     state.preview = value.preview;
   }
   if (state.m === 'playing' || state.m === 'result') {
-    if (!text(value.p, LIMITS.player) || !pairs(value.a, LIMITS.integer, LIMITS.integer))
+    if (
+      !text(value.p, LIMITS.player) ||
+      !pairs(value.a, LIMITS.integer, LIMITS.integer) ||
+      value.a.length !== state.q.length
+    )
       throw new Error('This game has invalid player answers.');
     state.p = value.p;
     state.a = value.a;
     if (state.m === 'playing') {
-      if (!Number.isInteger(value.i) || Number(value.i) < 0 || Number(value.i) > 4)
+      if (!Number.isInteger(value.i) || Number(value.i) < 0 || Number(value.i) >= state.q.length)
         throw new Error('Invalid question number.');
       state.i = Number(value.i);
-    } else if (!completeAnswers(state.a)) throw new Error('These results are incomplete.');
+    } else if (!completeAnswers(state.a, state.q.length)) throw new Error('These results are incomplete.');
     if (value.o !== undefined) {
       if (
         !record(value.o) ||
         !text(value.o.p, LIMITS.player) ||
         !pairs(value.o.a, LIMITS.integer, LIMITS.integer) ||
-        !completeAnswers(value.o.a)
+        !completeAnswers(value.o.a, state.q.length)
       )
         throw new Error('Invalid challenge results.');
       state.o = { p: value.o.p, a: value.o.a };
@@ -65,7 +78,7 @@ export function validateState(value: unknown): State {
       state.reveal = value.reveal;
     }
   }
-  return state;
+  return state.m === 'builder' ? builderState(state) : state;
 }
 export function encode(state: State): string {
   const json = JSON.stringify(validateState(state));

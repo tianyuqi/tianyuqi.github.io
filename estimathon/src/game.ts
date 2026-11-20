@@ -1,4 +1,4 @@
-export const QUESTION_COUNT = 5;
+export const QUESTION_COUNT = 13;
 export const LIMITS = { title: 60, question: 200, player: 30, integer: 100 } as const;
 export type Pair = [string, string];
 export type Question = Pair;
@@ -17,8 +17,8 @@ export type State = {
   reveal?: boolean;
 };
 
-export function emptyPairs(): Pair[] {
-  return Array.from({ length: QUESTION_COUNT }, () => ['', '']);
+export function emptyPairs(count = QUESTION_COUNT): Pair[] {
+  return Array.from({ length: count }, () => ['', '']);
 }
 export function newBuilder(): State {
   return { v: 1, m: 'builder', t: '', q: emptyPairs() };
@@ -48,9 +48,15 @@ export function intervalError([lower, upper]: Pair): string {
     ? ''
     : 'The lower bound must be less than or equal to the upper bound.';
 }
-export function completeQuestions(q: Question[]): boolean {
+// Existing shared five-question games remain playable; new games use thirteen.
+export function supportedQuestionCount(count: number): boolean {
+  return count === QUESTION_COUNT || count === 5;
+}
+export function completeQuestions(q: Question[], count = QUESTION_COUNT): boolean {
   return (
-    q.length === QUESTION_COUNT && q.every((question) => questionErrors(question).every((error) => !error))
+    supportedQuestionCount(count) &&
+    q.length === count &&
+    q.every((question) => questionErrors(question).every((error) => !error))
   );
 }
 export function blankInterval(bounds: Pair): boolean {
@@ -60,8 +66,10 @@ export function blankInterval(bounds: Pair): boolean {
 export function answerError(bounds: Pair): string {
   return blankInterval(bounds) ? '' : intervalError(bounds);
 }
-export function completeAnswers(a?: Pair[]): a is Pair[] {
-  return !!a && a.length === QUESTION_COUNT && a.every((pair) => !answerError(pair));
+export function completeAnswers(a?: Pair[], count = QUESTION_COUNT): a is Pair[] {
+  return (
+    supportedQuestionCount(count) && !!a && a.length === count && a.every((pair) => !answerError(pair))
+  );
 }
 export function formatInteger(value: string | bigint): string {
   return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -82,7 +90,7 @@ export function scoreInterval(answer: string, bounds: Pair) {
   return { status, points: correct ? upper / lower : 0n };
 }
 export function scoreGame(q: Question[], a: Pair[]) {
-  if (!completeQuestions(q) || !completeAnswers(a))
+  if (!completeQuestions(q, q.length) || !completeAnswers(a, q.length))
     throw new Error('Enter valid intervals or leave questions blank.');
   const intervals = q.map((question, i) => scoreInterval(question[1], a[i]));
   const counts = { green: 0, yellow: 0, red: 0 };
@@ -102,6 +110,13 @@ export function formatRatio([lower, upper]: Pair): string {
 export function gameLinkState(state: State): State {
   return { v: 1, m: 'game', t: state.t, q: state.q };
 }
+export function builderState(state: State): State {
+  return {
+    ...gameLinkState(state),
+    m: 'builder',
+    q: [...state.q, ...emptyPairs().slice(state.q.length)],
+  };
+}
 export function resultLinkState(state: State): State {
   return { v: 1, m: 'result', t: state.t, q: state.q, p: state.p || '', a: state.a };
 }
@@ -110,7 +125,7 @@ export function startPlaying(state: State, challenge = false): State {
     ...gameLinkState(state),
     m: 'playing',
     p: '',
-    a: emptyPairs(),
+    a: emptyPairs(state.q.length),
     i: 0,
     ...(challenge && state.a ? { o: { p: state.p || '', a: state.a } } : {}),
     ...(state.preview ? { preview: true } : {}),

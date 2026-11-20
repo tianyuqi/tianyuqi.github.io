@@ -20,6 +20,7 @@ describe('versioned, compressed URL state', () => {
         ['', '0'],
         ['', '-1'],
         ['', '1e5'],
+        ...emptyPairs(8),
       ],
     },
     ...SAMPLES.map(({ game }) => game),
@@ -35,6 +36,7 @@ describe('versioned, compressed URL state', () => {
         ['0', '2'],
         ['3', '2'],
         ['1e3', '5'],
+        ...emptyPairs(8),
       ],
     },
     { ...startPlaying(finished, true), i: 4 },
@@ -112,8 +114,17 @@ describe('versioned, compressed URL state', () => {
     const playing = startPlaying(game);
     expect(playing.m).toBe('playing');
     expect(playing.preview).toBeUndefined();
-    expect(playing.a).toEqual(emptyPairs());
+    expect(playing.a).toEqual(emptyPairs(5));
     expect(playing.i).toBe(0);
+  });
+  it('upgrades legacy builder drafts and rejects mismatched answer counts', () => {
+    const legacy = { ...newBuilder(), q: emptyPairs(5) };
+    expect(validateState(legacy).q).toHaveLength(13);
+    expect(() => validateState({ ...startPlaying(SAMPLE), a: emptyPairs(5) })).toThrow();
+    expect(() => validateState({ ...finished, a: emptyPairs(5) })).toThrow();
+    expect(() => validateState({ ...SAMPLE, q: SAMPLE.q.slice(0, 12) })).toThrow();
+    expect(() => validateState({ ...SAMPLE, q: [...SAMPLE.q, SAMPLE.q[0]] })).toThrow();
+    expect(validateState({ ...startPlaying(SAMPLE), i: 12 }).i).toBe(12);
   });
   it('recomputes results and discards unknown fields rather than trusting supplied scores', () => {
     expect(
@@ -148,7 +159,7 @@ describe('malformed and excessive input', () => {
     expect(() => encode({ ...SAMPLE, q: SAMPLE.q.map((q) => [q[0], '0']) })).toThrow();
     expect(() => encode({ ...finished, a: [['1', ''], ...emptyPairs().slice(1)] })).toThrow();
     expect(() => encode({ ...finished, a: finished.a!.map(() => ['3', '2']) })).toThrow();
-    expect(() => validateState({ ...startPlaying(SAMPLE), i: 5 })).toThrow();
+    expect(() => validateState({ ...startPlaying(SAMPLE), i: 13 })).toThrow();
     expect(() => validateState({ ...startPlaying(SAMPLE), i: 1.5 })).toThrow();
     expect(() => validateState({ ...finished, p: 'x'.repeat(31) })).toThrow();
     expect(() => validateState({ ...finished, o: { p: 'Alex', a: [['', '1'], ...emptyPairs().slice(1)] } })).toThrow();
