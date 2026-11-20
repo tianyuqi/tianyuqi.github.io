@@ -2,6 +2,8 @@ import { SiteHeader } from '../../shared/SiteHeader';
 import { StrictMode, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
+  answerError,
+  blankInterval,
   completeAnswers,
   completeQuestions,
   EMOJI,
@@ -158,15 +160,25 @@ function Scoring() {
             🟡 <strong>Yellow</strong> — contains the answer; upper ÷ lower is greater than 2.
           </li>
           <li>
-            🔴 <strong>Red</strong> — misses the answer.
+            🔴 <strong>Red</strong> — misses the answer or is left blank.
           </li>
         </ul>
         <p>
-          For each correct interval, round upper ÷ lower up to the next integer. Your score is{' '}
+          For each correct interval, round upper ÷ lower down to a whole number. Your score is{' '}
           <strong>
             (10 + sum of correct interval scores) × 2<sup>misses</sup>
           </strong>
-          . Every miss doubles your score. Lower is better.
+          . Every wrong or blank answer doubles your score. Lower is better.
+        </p>
+        <p>
+          Play from your own knowledge: no internet, calculators, or external references. You can
+          revise your ranges before the final submission; leave both bounds empty to skip.
+        </p>
+        <p className="small">
+          This adaptation has five questions, no timer, and one final submission. The{' '}
+          <a href="https://estimathon.com/how-to-play">official rules</a> use teams, 13 problems,
+          30 minutes, and up to 18 interval submissions, with the latest interval counting. The
+          green/yellow distinction is a visual aid for this version.
         </p>
         <p className="small">
           For an answer of 100: [90, 110] is green, [10, 1,000] is yellow, and [110, 200] is red.
@@ -214,12 +226,14 @@ function Breakdown({ state }: { state: State }) {
             <div>
               <dt>Submitted interval</dt>
               <dd>
-                {formatInteger(state.a![i][0])}–{formatInteger(state.a![i][1])}
+                {blankInterval(state.a![i])
+                  ? 'Left blank'
+                  : `${formatInteger(state.a![i][0])}–${formatInteger(state.a![i][1])}`}
               </dd>
             </div>
             <div>
               <dt>Interval ratio</dt>
-              <dd>{formatRatio(state.a![i])}</dd>
+              <dd>{blankInterval(state.a![i]) ? '—' : formatRatio(state.a![i])}</dd>
             </div>
           </dl>
         </article>
@@ -275,7 +289,9 @@ function Comparison({ state }: { state: State }) {
               <span>
                 {EMOJI[theirs.intervals[i].status]}{' '}
                 <span className="sr-only">{theirs.intervals[i].status}: </span>
-                {formatInteger(opponent.a[i][0])}–{formatInteger(opponent.a[i][1])}
+                {blankInterval(opponent.a[i])
+                  ? 'Left blank'
+                  : `${formatInteger(opponent.a[i][0])}–${formatInteger(opponent.a[i][1])}`}
               </span>
             </span>
             <span role="cell">
@@ -283,7 +299,9 @@ function Comparison({ state }: { state: State }) {
               <span>
                 {EMOJI[yours.intervals[i].status]}{' '}
                 <span className="sr-only">{yours.intervals[i].status}: </span>
-                {formatInteger(state.a![i][0])}–{formatInteger(state.a![i][1])}
+                {blankInterval(state.a![i])
+                  ? 'Left blank'
+                  : `${formatInteger(state.a![i][0])}–${formatInteger(state.a![i][1])}`}
               </span>
             </span>
             <span role="cell">
@@ -379,6 +397,10 @@ function App() {
               Answer five numerical questions with a lower and upper bound. Aim for narrow ranges
               that contain the correct answers. The lowest score wins.
             </p>
+            <p className="small">
+              A five-question adaptation of{' '}
+              <a href="https://estimathon.com/">Jane Street’s Estimathon</a>.
+            </p>
             <div className="actions">
               <a className="primary-link" href={stateUrl(startPlaying(SAMPLE), location.href)}>
                 Just play example <span aria-hidden="true">↗</span>
@@ -429,8 +451,8 @@ function App() {
             <div>
               <span className="eyebrow">02 / Check your score</span>
               <p>
-                Narrower correct ranges score better. Every miss doubles your score. Lower is
-                better.
+                Narrower correct ranges score better. Wrong or blank answers double your score.
+                Lower is better.
               </p>
             </div>
             <div>
@@ -593,7 +615,7 @@ function App() {
     const i = state.i!,
       a = state.a!,
       bounds = a[i];
-    const validation = intervalError(bounds);
+    const validation = answerError(bounds);
     const changeBound = (side: number, value: string) =>
       edit({
         ...state,
@@ -635,7 +657,8 @@ function App() {
         )}
         {h1(state.q[i][0], 'question-heading')}
         <p className="bound-hint">
-          Set your lower and upper bounds. A narrower correct range scores better.
+          Set your lower and upper bounds. A narrower correct range scores better. Leave both empty
+          to skip; a blank answer doubles your score.
         </p>
         <form
           noValidate
@@ -660,7 +683,7 @@ function App() {
               label="Lower bound"
               value={bounds[0]}
               onChange={(value) => changeBound(0, value)}
-              error={attempted || bounds[0] ? integerError(bounds[0]) : ''}
+              error={!blankInterval(bounds) && (attempted || bounds[0]) ? integerError(bounds[0]) : ''}
             />
             <span className="range-dash" aria-hidden="true">
               —
@@ -670,10 +693,10 @@ function App() {
               label="Upper bound"
               value={bounds[1]}
               onChange={(value) => changeBound(1, value)}
-              error={attempted || bounds[1] ? integerError(bounds[1]) : ''}
+              error={!blankInterval(bounds) && (attempted || bounds[1]) ? integerError(bounds[1]) : ''}
             />
           </div>
-          {!validation && (
+          {!intervalError(bounds) && (
             <p className="range-feedback" role="status">
               Your range spans {formatRatio(bounds)}{' '}
               <span>· Narrower is better, if the answer is inside.</span>
@@ -702,8 +725,8 @@ function App() {
               <p className="small">Submitting locks your estimates and reveals the answers.</p>
               {attempted && !completeAnswers(a) && (
                 <p className="error" role="alert">
-                  Complete all five intervals before submitting. Use Previous to review earlier
-                  questions.
+                  Finish each started interval or clear both bounds to leave it blank. Use Previous
+                  to review earlier questions.
                 </p>
               )}
             </div>
@@ -859,7 +882,8 @@ function App() {
       </main>
       <footer className="site-footer">
         <span>
-          Estimathon by <a href="/">Tim Qi</a>
+          Adapted by <a href="/">Tim Qi</a> from{' '}
+          <a href="https://estimathon.com/">Jane Street’s Estimathon</a>
         </span>
         <span>Five questions. Lowest score wins.</span>
       </footer>

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  answerError,
   completeAnswers,
   completeQuestions,
   emptyPairs,
@@ -66,20 +67,24 @@ describe('positive integer and five-question validation', () => {
     expect(intervalError(['', '10'])).toBeTruthy();
     expect(completeAnswers(intervals)).toBe(true);
     expect(completeAnswers(intervals.slice(0, 4))).toBe(false);
-    expect(completeAnswers(emptyPairs())).toBe(false);
+    expect(completeAnswers(emptyPairs())).toBe(true);
+    expect(completeAnswers([['1', ''], ...intervals.slice(1)])).toBe(false);
+    expect(answerError(['', ''])).toBe('');
+    expect(answerError(['', '10'])).toBeTruthy();
   });
 });
 
 describe('exact scoring', () => {
   it.each([
-    ['100', ['90', '110'], 'green', 2n],
+    ['100', ['90', '110'], 'green', 1n],
     ['100', ['10', '1000'], 'yellow', 100n],
     ['100', ['110', '200'], 'red', 0n],
     ['100', ['100', '100'], 'green', 1n],
     ['100', ['50', '100'], 'green', 2n],
     ['100', ['100', '200'], 'green', 2n],
-    ['100', ['50', '101'], 'yellow', 3n],
+    ['100', ['50', '101'], 'yellow', 2n],
     ['100', ['1', '99'], 'red', 0n],
+    ['100', ['', ''], 'red', 0n],
   ] as [string, Pair, string, bigint][])('scores %s in %j as %s', (answer, bounds, status, points) => {
     expect(scoreInterval(answer, bounds)).toEqual({ status, points });
   });
@@ -88,7 +93,7 @@ describe('exact scoring', () => {
     expect(scoreInterval(String(n), [String(n), String(2n * n)])).toEqual({ status: 'green', points: 2n });
     expect(scoreInterval(String(n), [String(n), String(2n * n + 1n)])).toEqual({
       status: 'yellow',
-      points: 3n,
+      points: 2n,
     });
     expect(scoreInterval(String(n - 1n), [String(n), String(2n * n)]).status).toBe('red');
   });
@@ -101,7 +106,7 @@ describe('exact scoring', () => {
       ['100', '100'],
       ['1', '99'],
     ]);
-    expect(score.total).toBe(452n); // (10 + 2 + 100 + 1) × 4
+    expect(score.total).toBe(448n); // (10 + floor(110/90) + 100 + 1) × 4
     expect(score.counts).toEqual({ green: 2, yellow: 1, red: 2 });
     expect(score.circles).toBe('🟢 🟡 🔴 🟢 🔴');
     expect(
@@ -116,7 +121,18 @@ describe('exact scoring', () => {
         Array.from({ length: 5 }, () => ['100', '100']),
       ).total,
     ).toBe(15n);
-    expect(() => scoreGame(q, emptyPairs())).toThrow();
+    expect(scoreGame(q, emptyPairs()).total).toBe(320n);
+    expect(() => scoreGame(q, [['1', ''], ...emptyPairs().slice(1)])).toThrow();
+  });
+  it('treats blanks exactly like misses and never scores malformed intervals', () => {
+    const q: Pair[] = Array.from({ length: 5 }, () => ['Question?', '100']);
+    const answers: Pair[] = [['90', '110'], ['', ''], ['100', '100'], ['', ''], ['100', '200']];
+    expect(scoreGame(q, answers).total).toBe(56n); // (10 + 1 + 1 + 2) × 4
+    expect(scoreGame(q, answers).counts).toEqual({ green: 3, yellow: 0, red: 2 });
+    expect(() => scoreInterval('100', ['1', ''])).toThrow();
+    expect(() => scoreInterval('100', ['0', '100'])).toThrow();
+    expect(() => scoreInterval('100', ['200', '100'])).toThrow();
+    expect(() => scoreInterval('0', ['', ''])).toThrow();
   });
   it('displays ratios without floating point, including rounding and very large values', () => {
     expect(formatRatio(['10', '20'])).toBe('2×');

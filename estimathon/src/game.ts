@@ -53,8 +53,15 @@ export function completeQuestions(q: Question[]): boolean {
     q.length === QUESTION_COUNT && q.every((question) => questionErrors(question).every((error) => !error))
   );
 }
+export function blankInterval(bounds: Pair): boolean {
+  return bounds.every((bound) => bound === '');
+}
+// A blank is a valid final response, but a partially entered interval is not.
+export function answerError(bounds: Pair): string {
+  return blankInterval(bounds) ? '' : intervalError(bounds);
+}
 export function completeAnswers(a?: Pair[]): a is Pair[] {
-  return !!a && a.length === QUESTION_COUNT && a.every((pair) => !intervalError(pair));
+  return !!a && a.length === QUESTION_COUNT && a.every((pair) => !answerError(pair));
 }
 export function formatInteger(value: string | bigint): string {
   return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -65,15 +72,18 @@ export function inputNumber(value: string): string {
 }
 export type Status = 'green' | 'yellow' | 'red';
 export const EMOJI: Record<Status, string> = { green: '🟢', yellow: '🟡', red: '🔴' };
+// Official scoring: https://estimathon.com/how-to-play (floor each good interval ratio).
 export function scoreInterval(answer: string, bounds: Pair) {
-  if (!validInteger(answer) || intervalError(bounds)) throw new Error('Cannot score invalid answers.');
+  if (!validInteger(answer) || answerError(bounds)) throw new Error('Cannot score invalid answers.');
+  if (blankInterval(bounds)) return { status: 'red' as const, points: 0n };
   const [lower, upper] = bounds.map(BigInt);
   const correct = lower <= BigInt(answer) && BigInt(answer) <= upper;
   const status: Status = !correct ? 'red' : upper <= 2n * lower ? 'green' : 'yellow';
-  return { status, points: correct ? (upper + lower - 1n) / lower : 0n };
+  return { status, points: correct ? upper / lower : 0n };
 }
 export function scoreGame(q: Question[], a: Pair[]) {
-  if (!completeQuestions(q) || !completeAnswers(a)) throw new Error('Complete all five questions first.');
+  if (!completeQuestions(q) || !completeAnswers(a))
+    throw new Error('Enter valid intervals or leave questions blank.');
   const intervals = q.map((question, i) => scoreInterval(question[1], a[i]));
   const counts = { green: 0, yellow: 0, red: 0 };
   for (const interval of intervals) counts[interval.status]++;

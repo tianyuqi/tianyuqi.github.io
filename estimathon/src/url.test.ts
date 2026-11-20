@@ -39,6 +39,8 @@ describe('versioned, compressed URL state', () => {
     },
     { ...startPlaying(finished, true), i: 4 },
     finished,
+    { ...finished, a: emptyPairs() },
+    { ...finished, a: [['1', '100'], ...emptyPairs().slice(1)] },
     { ...finished, reveal: true, o: { p: 'Previous player', a: finished.a! } },
   ];
   it.each(drafts)(
@@ -144,12 +146,12 @@ describe('malformed and excessive input', () => {
   it('allows invalid drafts, but validates all published questions and finished intervals', () => {
     expect(validateState(newBuilder())).toEqual(newBuilder());
     expect(() => encode({ ...SAMPLE, q: SAMPLE.q.map((q) => [q[0], '0']) })).toThrow();
-    expect(() => encode({ ...finished, a: emptyPairs() })).toThrow();
+    expect(() => encode({ ...finished, a: [['1', ''], ...emptyPairs().slice(1)] })).toThrow();
     expect(() => encode({ ...finished, a: finished.a!.map(() => ['3', '2']) })).toThrow();
     expect(() => validateState({ ...startPlaying(SAMPLE), i: 5 })).toThrow();
     expect(() => validateState({ ...startPlaying(SAMPLE), i: 1.5 })).toThrow();
     expect(() => validateState({ ...finished, p: 'x'.repeat(31) })).toThrow();
-    expect(() => validateState({ ...finished, o: { p: 'Alex', a: emptyPairs() } })).toThrow();
+    expect(() => validateState({ ...finished, o: { p: 'Alex', a: [['', '1'], ...emptyPairs().slice(1)] } })).toThrow();
     expect(() => validateState({ ...finished, reveal: 'yes' })).toThrow();
     expect(() => validateState({ ...SAMPLE, q: SAMPLE.q.map((q) => [q[0], 123]) })).toThrow();
   });
