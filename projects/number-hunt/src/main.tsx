@@ -59,12 +59,19 @@ function App() {
   const target = targetOf(board, run);
   const finished = run.status === 'won' || run.status === 'lost';
   const previousReady = useRef(ready);
+  const timed = level.initial !== null;
   const found =
     target === null
       ? 5
       : run.cleared.filter((i) => board.t[i][3] === target).length;
   const urgent =
-    run.remaining < 5000 ? 'critical' : run.remaining < 10000 ? 'warning' : '';
+    run.remaining === null
+      ? ''
+      : run.remaining < 5000
+        ? 'critical'
+        : run.remaining < 10000
+          ? 'warning'
+          : '';
 
   useEffect(() => {
     const url = new URL(location.href);
@@ -75,7 +82,7 @@ function App() {
     saveRun(board, run);
   }, [board, run.cleared, run.deadline, run.status]); // Deadlines survive refresh without saving every tick.
   useEffect(() => {
-    if (run.status !== 'playing') return;
+    if (run.status !== 'playing' || run.deadline === null) return;
     const update = () =>
       setSession((s) => ({ ...s, run: tick(s.run, Date.now()) }));
     const interval = window.setInterval(update, 100);
@@ -112,17 +119,19 @@ function App() {
       cells.current[0]?.focus({ preventScroll: true });
   }, [finished, run.status]);
   useEffect(() => {
-    if (run.status === 'playing' && run.remaining < 5000)
+    if (run.status === 'playing' && run.remaining !== null && run.remaining < 5000)
       setMessage('Less than five seconds left.');
-    else if (run.status === 'playing' && run.remaining < 10000)
+    else if (run.status === 'playing' && run.remaining !== null && run.remaining < 10000)
       setMessage('Less than ten seconds left.');
-  }, [run.status, run.remaining < 5000, run.remaining < 10000]);
+  }, [run.status, run.remaining !== null && run.remaining < 5000, run.remaining !== null && run.remaining < 10000]);
 
   function start(next: Board, same = false) {
     setSession({ board: next, run: freshRun(next), notice: '' });
     setMessage(
       same
-        ? 'Same questions, fresh clock. Press Start game when ready.'
+        ? timed
+          ? 'Same questions, fresh clock. Press Start game when ready.'
+          : 'Same questions. Press Start game when ready.'
         : 'New board ready. Press Start game when ready.',
     );
     setError(null);
@@ -149,7 +158,9 @@ function App() {
     if (board.t[index][3] !== target) {
       setError(index);
       setMessage(
-        `Try again. Minus ${level.penalty} ${level.penalty === 1 ? 'second' : 'seconds'}.`,
+        timed
+          ? `Try again. Minus ${level.penalty} seconds.`
+          : 'Try again. No time penalty.',
       );
     } else {
       setError(null);
@@ -157,9 +168,13 @@ function App() {
       setMessage(
         next.status === 'won'
           ? 'All fifty found!'
-          : nextTarget !== target
-            ? `Timer reset to ${level.initial}s. Find all the ${nextTarget}s.`
-            : `Timer reset to ${level.initial}s. ${countFor(target!) - found - 1} left in this stage.`,
+          : timed
+            ? nextTarget !== target
+              ? `Timer reset to ${level.initial}s. Find all the ${nextTarget}s.`
+              : `Timer reset to ${level.initial}s. ${countFor(target!) - found - 1} left in this stage.`
+            : nextTarget !== target
+              ? `Find all the ${nextTarget}s.`
+              : `${countFor(target!) - found - 1} left in this stage.`,
       );
     }
   }
@@ -306,12 +321,19 @@ function App() {
                     <strong>8</strong>, all the way to <strong>0</strong>.
                   </li>
                   <li>
-                    Tap a match to clear it. A wrong tap costs{' '}
-                    <strong>{level.penalty}s</strong>.
+                    {timed ? (
+                      <>
+                        Tap a match to clear it. A wrong tap costs{' '}
+                        <strong>{level.penalty}s</strong>.
+                      </>
+                    ) : (
+                      'Tap a match to clear it. Wrong taps have no time penalty.'
+                    )}
                   </li>
                   <li>
-                    Every correct answer resets the timer to{' '}
-                    <strong>{level.initial}s</strong>.
+                    {timed
+                      ? `Every correct answer resets the timer to ${level.initial}s.`
+                      : 'There is no time limit. Find each target at your own pace.'}
                   </li>
                 </ol>
                 <p>
@@ -320,9 +342,9 @@ function App() {
                     : 'The whole answer must match: 12 − 3 = 9 counts as 9.'}
                 </p>
                 <p className="small">
-                  Press Start game to reveal the board and start with{' '}
-                  {level.initial}s. The clock keeps running if you leave the page.
-                  No pausing, keep searching.
+                  {timed
+                    ? `Press Start game to reveal the board and start with ${level.initial}s. The clock keeps running if you leave the page. No pausing, keep searching.`
+                    : 'Press Start game to reveal the board. Take all the time you need.'}
                 </p>
               </details>
             </section>
@@ -366,30 +388,40 @@ function App() {
                       </p>
                     </div>
                   </div>
-                  <div
-                    className="timer"
-                    role="timer"
-                    aria-label={`${Math.ceil(run.remaining / 1000)} seconds remaining`}
-                  >
-                    <span>TIME LEFT</span>
-                    <strong>
-                      {(run.remaining / 1000).toFixed(1)}
-                      <small>s</small>
-                    </strong>
-                    <small>
-                      {run.status === 'ready'
-                        ? 'starts with the game'
-                        : finished
-                          ? 'clock stopped'
-                          : 'keep going'}
-                    </small>
+                  {timed ? (
+                    <div
+                      className="timer"
+                      role="timer"
+                      aria-label={`${Math.ceil(run.remaining! / 1000)} seconds remaining`}
+                    >
+                      <span>TIME LEFT</span>
+                      <strong>
+                        {(run.remaining! / 1000).toFixed(1)}
+                        <small>s</small>
+                      </strong>
+                      <small>
+                        {run.status === 'ready'
+                          ? 'starts with the game'
+                          : finished
+                            ? 'clock stopped'
+                            : 'keep going'}
+                      </small>
+                    </div>
+                  ) : (
+                    <div className="timer untimed" aria-label="No time limit">
+                      <span>NO TIME LIMIT</span>
+                      <strong>∞</strong>
+                      <small>take your time</small>
+                    </div>
+                  )}
+                </div>
+                {timed && (
+                  <div className="timer-track" aria-hidden="true">
+                    <div
+                      style={{ width: `${run.remaining! / (level.initial! * 10)}%` }}
+                    />
                   </div>
-                </div>
-                <div className="timer-track" aria-hidden="true">
-                  <div
-                    style={{ width: `${run.remaining / (level.initial * 10)}%` }}
-                  />
-                </div>
+                )}
                 <div
                   className="stage-strip"
                   role="group"
@@ -423,8 +455,9 @@ function App() {
               <div className="start-panel">
                 <h2>Ready to search?</h2>
                 <p>
-                  The board appears when you start. Each correct answer resets
-                  your {level.initial}s timer.
+                  {timed
+                    ? `The board appears when you start. Each correct answer resets your ${level.initial}s timer.`
+                    : 'The board appears when you start. Search at your own pace with no time limit.'}
                 </p>
                 <button
                   className="primary"
@@ -503,7 +536,9 @@ function App() {
                     </p>
                     <p>
                       {run.status === 'won'
-                        ? `${(run.remaining / 1000).toFixed(1)}s remaining`
+                        ? run.remaining === null
+                          ? `${Math.round((run.finishedAt! - run.startedAt!) / 1000)}s played`
+                          : `${(run.remaining / 1000).toFixed(1)}s remaining`
                         : `${Math.round((run.finishedAt! - run.startedAt!) / 1000)}s played`}
                       <br />
                       {board.d} ·{' '}
