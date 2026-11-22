@@ -1,11 +1,12 @@
 import { useRef, useState } from 'react';
-import { gamePrompt } from './prompt';
+import { chatPromptLinks, gamePrompt } from './prompt';
 
 export function BuilderGuide() {
   const [status, setStatus] = useState('');
   const [expanded, setExpanded] = useState(false);
   const promptInput = useRef<HTMLTextAreaElement>(null);
   const prompt = gamePrompt(location.href);
+  const chatLinks = chatPromptLinks(prompt);
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(prompt);
@@ -39,6 +40,14 @@ export function BuilderGuide() {
         <button type="button" onClick={copy}>
           Copy LLM prompt
         </button>
+        <a href={chatLinks.chatgpt} target="_blank" rel="noopener noreferrer">
+          Open in ChatGPT <span aria-hidden="true">↗</span>
+          <span className="sr-only"> (opens in a new tab)</span>
+        </a>
+        <a href={chatLinks.claude} target="_blank" rel="noopener noreferrer">
+          Open in Claude <span aria-hidden="true">↗</span>
+          <span className="sr-only"> (opens in a new tab)</span>
+        </a>
       </div>
       <p className="small" role="status">
         {status}

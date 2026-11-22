@@ -1,5 +1,13 @@
 import { QUESTION_COUNT } from './game';
 
+export function chatPromptLinks(prompt: string) {
+  const query = new URLSearchParams({ q: prompt });
+  return {
+    chatgpt: `https://chatgpt.com/?${query}`,
+    claude: `https://claude.ai/new?${query}`,
+  };
+}
+
 export function gamePrompt(base: string): string {
   const url = new URL('/estimathon/', base).href;
   return `Create an Estimathon game about a topic of my choice. Ask me for a topic if I have not supplied one.

@@ -40,7 +40,8 @@ summary {
   touch-action: manipulation;
 }
 button,
-.primary-link {
+.primary-link,
+.prompt-actions a {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -60,7 +61,8 @@ button,
     background 160ms ease,
     border-color 160ms ease;
 }
-button:hover {
+button:hover,
+.prompt-actions a:hover {
   background: var(--surface);
   border-color: #b8a694;
 }
@@ -518,7 +520,7 @@ summary {
   margin-top: 20px;
 }
 .prompt-actions p {
-  flex: 1 1 240px;
+  flex-basis: 100%;
   margin: 0;
 }
 .builder-guide details {
