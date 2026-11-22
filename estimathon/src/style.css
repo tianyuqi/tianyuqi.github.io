@@ -1,14 +1,14 @@
 :root {
   font-family: 'Avenir Next', Avenir, 'Segoe UI', sans-serif;
-  color: #243e35;
-  background: #f7f7ef;
+  color: #302d2b;
+  background: #faf7f2;
   font-synthesis: none;
-  --paper: #f7f7ef;
-  --ink: #243e35;
-  --muted: #52624f;
-  --rule: #d6ddcf;
+  --paper: #faf7f2;
+  --ink: #302d2b;
+  --muted: #69615b;
+  --rule: #ded6cc;
   --accent: #b83e23;
-  --mint: #e1ebd8;
+  --surface: #eee5d9;
   --mono: ui-monospace, SFMono-Regular, Consolas, monospace;
   --serif: Georgia, 'Times New Roman', serif;
 }
@@ -61,8 +61,8 @@ button,
     border-color 160ms ease;
 }
 button:hover {
-  background: var(--mint);
-  border-color: #9baa93;
+  background: var(--surface);
+  border-color: #b8a694;
 }
 button:disabled {
   opacity: 0.4;
@@ -231,11 +231,11 @@ main > .text-button {
 }
 .example {
   position: relative;
-  border: 1px solid #c1ceb6;
+  border: 1px solid #d5c5b3;
   border-radius: 20px;
   padding: 28px;
-  background: var(--mint);
-  box-shadow: 8px 8px 0 #edf0e4;
+  background: var(--surface);
+  box-shadow: 8px 8px 0 #f0e9e0;
   min-width: 0;
 }
 .example-top {
@@ -247,7 +247,7 @@ main > .text-button {
 .example-label {
   font-size: 11px;
   font-weight: 600;
-  border: 1px solid #b9c7ad;
+  border: 1px solid #c9b8a4;
   border-radius: 30px;
   padding: 6px 10px;
 }
@@ -262,8 +262,8 @@ main > .text-button {
   align-items: center;
 }
 .example-bounds > div {
-  background: #f7f9f1;
-  border: 1px solid #c9d3bf;
+  background: #fcf9f4;
+  border: 1px solid #d8cbbd;
   border-radius: 10px;
   padding: 12px 16px;
 }
@@ -286,7 +286,7 @@ main > .text-button {
   height: 64px;
   margin: 16px 6px 0;
   position: relative;
-  background: linear-gradient(#a3b396, #a3b396) center/100% 1px no-repeat;
+  background: linear-gradient(#b8a38f, #b8a38f) center/100% 1px no-repeat;
 }
 .number-line::before,
 .number-line::after {
@@ -294,7 +294,7 @@ main > .text-button {
   position: absolute;
   width: 1px;
   height: 9px;
-  background: #a3b396;
+  background: #b8a38f;
   top: 28px;
 }
 .number-line::after {
@@ -307,7 +307,7 @@ main > .text-button {
   width: 60%;
   height: 8px;
   border-radius: 5px;
-  background: #839f6d;
+  background: #b68a68;
 }
 .line-range::before,
 .line-range::after {
@@ -316,7 +316,7 @@ main > .text-button {
   width: 2px;
   height: 20px;
   top: -6px;
-  background: #466b37;
+  background: #805b40;
 }
 .line-range::after {
   right: 0;
@@ -336,11 +336,11 @@ main > .text-button {
   top: 19px;
   left: 2px;
   background: var(--ink);
-  border: 2px solid var(--mint);
+  border: 2px solid var(--surface);
   border-radius: 50%;
 }
 .example-bottom {
-  border-top: 1px solid #bccbb0;
+  border-top: 1px solid #cfbeaa;
   padding-top: 16px;
   display: flex;
   flex-wrap: wrap;
@@ -350,7 +350,7 @@ main > .text-button {
   color: var(--muted);
 }
 .example-success {
-  color: #315528;
+  color: #765236;
   font-weight: 600;
 }
 .section-heading {
@@ -463,7 +463,7 @@ summary {
 .field textarea {
   display: block;
   width: 100%;
-  border: 1px solid #aebca5;
+  border: 1px solid #c8b9aa;
   border-radius: 9px;
   background: #fffdf7;
   color: var(--ink);
@@ -477,7 +477,7 @@ summary {
 }
 .field input::placeholder,
 .field textarea::placeholder {
-  color: #707b6c;
+  color: #7c7066;
   opacity: 1;
 }
 .field [aria-invalid='true'] {
@@ -495,7 +495,7 @@ summary {
   border: 1px solid var(--rule);
   border-radius: 10px;
   padding: 8px 18px;
-  background: #edf1e5;
+  background: #f1e9de;
 }
 .builder-guide {
   padding: 16px 0;
@@ -607,7 +607,8 @@ summary {
   flex-shrink: 0;
 }
 .progress {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(13, minmax(0, 1fr));
   gap: 8px;
   margin: 18px 0 34px;
 }
@@ -617,14 +618,14 @@ summary {
   justify-content: center;
   height: 32px;
   flex: 1;
-  background: #e9eddf;
+  background: #eee7df;
   border-radius: 5px;
   color: var(--muted);
   font: 11px var(--mono);
 }
 .progress .done {
-  background: #dce8cd;
-  color: #36572a;
+  background: #e7d4c1;
+  color: #644831;
 }
 .progress .current {
   background: var(--ink);
@@ -662,7 +663,7 @@ h1.question-heading {
 .range-feedback {
   margin-top: 16px;
   font-size: 13px;
-  color: #3c6230;
+  color: #765236;
   overflow-wrap: anywhere;
 }
 .range-feedback span {
@@ -690,7 +691,7 @@ h1.question-heading {
 }
 .challenge-note {
   font-size: 13px;
-  background: var(--mint);
+  background: var(--surface);
   border-radius: 8px;
   padding: 14px;
   margin: -10px 0 26px;
@@ -698,6 +699,7 @@ h1.question-heading {
 }
 .circles {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   font-size: 30px;
   line-height: 1.5;
@@ -725,9 +727,9 @@ h1.question-heading {
   margin-top: 16px;
 }
 .score-box {
-  border: 1px solid #bfceb1;
+  border: 1px solid #d3c1ac;
   border-radius: 14px;
-  background: var(--mint);
+  background: var(--surface);
   padding: 26px;
   display: flex;
   flex-direction: column;
@@ -761,7 +763,7 @@ h1.question-heading {
 }
 .answer-card {
   border: 1px solid var(--rule);
-  border-top: 4px solid #8eac70;
+  border-top: 4px solid #a28c75;
   border-radius: 12px;
   padding: 24px;
   min-width: 0;
@@ -799,7 +801,7 @@ h1.question-heading {
   gap: 12px;
   padding-top: 10px;
   margin-top: 8px;
-  border-top: 1px solid #e6e9de;
+  border-top: 1px solid #e8dfd5;
 }
 .answer-card dt {
   color: var(--muted);
@@ -819,7 +821,7 @@ h1.question-heading {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
   padding: 24px;
-  background: var(--mint);
+  background: var(--surface);
   border-radius: 12px;
   margin-bottom: 24px;
 }
@@ -831,7 +833,7 @@ h1.question-heading {
   min-width: 0;
 }
 .score-duo > div + div {
-  border-left: 1px solid #bdcbb1;
+  border-left: 1px solid #cdbba6;
   padding-left: 24px;
 }
 .score-duo span {
@@ -877,7 +879,7 @@ h1.question-heading {
   overflow-wrap: anywhere;
 }
 .notice {
-  background: #e1ebd8;
+  background: #eee5d9;
   position: fixed;
   bottom: 24px;
   left: 50%;
@@ -885,7 +887,7 @@ h1.question-heading {
   z-index: 5;
   width: max-content;
   max-width: calc(100% - 32px);
-  box-shadow: 0 4px 20px #243e3520;
+  box-shadow: 0 4px 20px #302d2b20;
 }
 .warning {
   background: #f4e6c9;
@@ -975,7 +977,7 @@ h1.question-heading {
   .example {
     padding: 22px;
     border-radius: 14px;
-    box-shadow: 4px 5px 0 #edf0e4;
+    box-shadow: 4px 5px 0 #f0e9e0;
   }
   .example h2 {
     font-size: 28px;
@@ -1039,6 +1041,7 @@ h1.question-heading {
     font-size: 11px;
   }
   .progress {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     margin-bottom: 24px;
     gap: 6px;
   }
@@ -1077,7 +1080,7 @@ h1.question-heading {
     background: var(--paper);
     border: 1px solid var(--rule);
     border-radius: 12px;
-    box-shadow: 0 4px 16px #243e3510;
+    box-shadow: 0 4px 16px #302d2b10;
     gap: 8px;
   }
   .play-actions button {
