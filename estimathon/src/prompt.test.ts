@@ -1,7 +1,25 @@
 import { describe, expect, it } from 'vitest';
 import LZString from 'lz-string';
-import { gamePrompt } from './prompt';
+import { chatPromptLinks, gamePrompt } from './prompt';
 import { readUrl } from './url';
+
+describe('prefilled chat links', () => {
+  it.each([
+    gamePrompt('https://tianyuqi.github.io/estimathon/?d=old#d=draft'),
+    'A topic: café & tea + 50%? #1\n"quotes", `code`, and 漢字 🎲',
+  ])('preserves the complete prompt as a single query parameter', (prompt) => {
+    const links = chatPromptLinks(prompt);
+
+    for (const [provider, href] of Object.entries(links)) {
+      const url = new URL(href);
+      expect(url.origin + url.pathname).toBe(
+        provider === 'chatgpt' ? 'https://chatgpt.com/' : 'https://claude.ai/new',
+      );
+      expect([...url.searchParams]).toEqual([['q', prompt]]);
+      expect(url.hash).toBe('');
+    }
+  });
+});
 
 describe('copyable game generation prompt', () => {
   it.each(['https://tianyuqi.github.io', 'http://localhost:5173'])(
