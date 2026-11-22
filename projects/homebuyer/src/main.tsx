@@ -29,6 +29,7 @@ import {
   type Challenge,
 } from './url';
 import { loadDataset } from './data';
+import { HomeAddress, HomeMap } from './location';
 import './style.css';
 
 const money = (value: number) =>
@@ -497,7 +498,7 @@ function Game({ challenge, homes }: Loaded) {
               </span>
             </div>
             <h3>{h.neighborhood}</h3>
-            <p className="muted">{h.address}</p>
+            <HomeAddress home={h} simulated={simulated} />
             <p className="recap-clues">
               {h.beds} beds · {h.baths} baths · {h.sqft.toLocaleString('en-US')}{' '}
               sq ft · Sold {date(h.saleDate)}
@@ -524,6 +525,7 @@ function Game({ challenge, homes }: Loaded) {
                 · {labels[outcome(challenge.rival[i], h.salePrice)]}
               </p>
             )}
+            <HomeMap home={h} simulated={simulated} />
             {!simulated && (
               <a
                 className="source"
@@ -586,6 +588,7 @@ function Game({ challenge, homes }: Loaded) {
         <h1 ref={title} tabIndex={-1}>
           {home.neighborhood}
         </h1>
+        <HomeAddress home={home} simulated={simulated} />
         <div className="clues">
           <div>
             <strong>{home.beds}</strong>
@@ -698,7 +701,6 @@ function Game({ challenge, homes }: Loaded) {
           <p className="difference">
             <Difference bid={bids[index]} home={home} />
           </p>
-          <p className="revealed-address">{home.address}</p>
           <button className="primary" onClick={next}>
             {index === 9 ? 'See your results' : 'Next home'}{' '}
             <span aria-hidden="true">→</span>
@@ -708,6 +710,7 @@ function Game({ challenge, homes }: Loaded) {
           </p>
         </div>
       )}
+      <HomeMap key={home.id} home={home} simulated={simulated} />
     </section>
   );
 }

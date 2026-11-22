@@ -12,7 +12,7 @@ export interface Home {
   sqft: number;
   saleDate: string;
   salePrice: number;
-  address: string;
+  address?: string | null;
   sourceUrl: string;
 }
 export interface Dataset {
@@ -139,7 +139,7 @@ export function validateDataset(value: unknown, version: string): Dataset {
       ids.has(home.id) ||
       typeof home.neighborhood !== 'string' ||
       !home.neighborhood ||
-      typeof home.address !== 'string' ||
+      (home.address != null && typeof home.address !== 'string') ||
       !Number.isSafeInteger(home.salePrice) ||
       home.salePrice <= 0 ||
       home.salePrice > MAX_BID ||

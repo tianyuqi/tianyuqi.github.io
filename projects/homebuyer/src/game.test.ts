@@ -100,7 +100,7 @@ describe('deterministic properties', () => {
       true,
     );
     expect(
-      dataset.homes.every((home) => home.address.startsWith('Simulated home ')),
+      dataset.homes.every((home) => home.address?.startsWith('Simulated home ')),
     ).toBe(true);
     expect(
       dataset.homes.every((home) => home.sourceUrl.includes('.invalid/')),

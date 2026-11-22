@@ -24,7 +24,7 @@ Rows missing valid positive sale price/square footage, nonnegative bed/bath coun
 - Download: https://data.sfgov.org/resource/j2bu-swwd.geojson?$limit=1000
 - DataSF open-data terms: https://datasf.org/opendata/terms-of-use/
 
-These are polygon-derived neighborhood names, independent of the source's broad `LOCATION` districts. Polygon and MultiPolygon rings and holes are supported. If a coordinate lies on a shared boundary, the lexically first matching neighborhood name wins. All gameplay lookup is offline; no maps or external gameplay APIs are called.
+These are polygon-derived neighborhood names, independent of the source's broad `LOCATION` districts. Polygon and MultiPolygon rings and holes are supported. If a coordinate lies on a shared boundary, the lexically first matching neighborhood name wins. Neighborhood lookup is offline. The game shows the supplied street address before bidding. Its optional Google Map loads only when expanded and uses an address search without an API key; missing addresses and simulated homes use a clearly labeled approximate neighborhood search. Simulated addresses are never sent to Google Maps. Map availability does not affect bidding or dataset loading. Coordinates from the source CSV are used for neighborhood lookup, but are not retained in the released game JSON.
 
 ## Game format v1
 
