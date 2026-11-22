@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  root: 'homebuyer',
+  root: 'projects/homebuyer',
   base: '/homebuyer/',
-  build: { outDir: '../dist/homebuyer', emptyOutDir: true },
+  build: { outDir: '../../dist/homebuyer', emptyOutDir: true },
 });

@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  root: 'hex-pairs',
+  root: 'projects/hex-pairs',
   base: '/hex-pairs/',
-  build: { outDir: '../dist/hex-pairs', emptyOutDir: true },
+  build: { outDir: '../../dist/hex-pairs', emptyOutDir: true },
 });

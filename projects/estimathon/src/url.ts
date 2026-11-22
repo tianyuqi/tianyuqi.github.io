@@ -1,5 +1,5 @@
 import LZString from 'lz-string';
-import { decompressBounded } from './decompress';
+import { decompressBounded } from '../../../shared/lib/decompress';
 import {
   builderState,
   completeAnswers,

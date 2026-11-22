@@ -1,5 +1,5 @@
 import LZString from 'lz-string';
-import { decompressBounded } from '../../estimathon/src/decompress';
+import { decompressBounded } from '../../../shared/lib/decompress';
 import {
   MAX_BID,
   ROUND_COUNT,

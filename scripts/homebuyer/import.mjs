@@ -19,8 +19,8 @@ if (
   process.exit(1);
 }
 const root = fileURLToPath(new URL('../../', import.meta.url));
-const dataDir = resolve(root, 'homebuyer/data');
-const publicDir = resolve(root, 'homebuyer/public/data');
+const dataDir = resolve(root, 'projects/homebuyer/data');
+const publicDir = resolve(root, 'projects/homebuyer/public/data');
 const hash = (text) => createHash('sha256').update(text).digest('hex');
 const source = await readFile(csvPath);
 const boundaryName = 'sf-neighborhoods-2026-11-01.geojson';
