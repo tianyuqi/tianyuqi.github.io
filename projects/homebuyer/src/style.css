@@ -237,8 +237,52 @@ h1 {
   letter-spacing: -1.3px;
   min-height: 42px;
   outline: none;
-  margin-bottom: 25px;
+  margin-bottom: 8px;
 }
+
+.home-address {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+  margin-bottom: 18px;
+}
+.home-map {
+  margin: 18px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+}
+.home-map summary {
+  padding: 14px 0;
+  min-height: 48px;
+  cursor: pointer;
+  color: var(--green);
+  font-weight: 600;
+}
+.home-map summary:focus-visible {
+  outline: 3px solid #738e68;
+  outline-offset: 4px;
+}
+.map-content {
+  padding-bottom: 12px;
+}
+.map-note {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--muted);
+  margin: 8px 0;
+}
+.home-map iframe {
+  display: block;
+  width: 100%;
+  height: 220px;
+  border: 0;
+  border-radius: 6px;
+  margin: 12px 0;
+  background: var(--paper);
+}
+
 .clues {
   display: grid;
   grid-template-columns: 1fr 1fr 1.3fr;
@@ -405,9 +449,6 @@ h1 {
   color: var(--muted);
   font-size: 9px !important;
   margin: 10px 0 0 !important;
-}
-.revealed-address {
-  color: var(--muted);
 }
 .reveal-card.good {
   border-top: 3px solid #54805b;
@@ -707,9 +748,6 @@ textarea {
   .property {
     padding-top: 24px;
   }
-  .property h1 {
-    margin-bottom: 18px;
-  }
   .clues {
     padding-bottom: 16px;
   }
@@ -760,7 +798,7 @@ textarea {
   .round .property h1 {
     font-size: 28px;
     min-height: 0;
-    margin-bottom: 14px;
+    margin-bottom: 8px;
   }
   .round .clues {
     padding-bottom: 12px;
