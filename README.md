@@ -1,5 +1,26 @@
 Personal website made in conjunction with Claude Code and Codex.
 
+Repository layout separates published pages, authored content, project apps, and reusable code:
+
+```text
+site/                Static HTML pages, site CSS/JavaScript, images, and .nojekyll
+content/posts/       Published Markdown posts
+content/drafts/      Unpublished writing (not deployed)
+content/reports/     Archived PDFs
+projects/            Independent Vite + React + TypeScript apps
+  hex-pairs/
+  estimathon/
+  homebuyer/         Includes its source datasets and public releases
+  number-hunt/
+shared/components/   Reusable React components and their styles
+shared/lib/          Utilities used by multiple projects
+scripts/             Site assembly and Homebuyer data tooling
+```
+
+Run all npm commands from the repository root. Each project keeps its own Vite config, entry page, source, and optional public assets. `dist/` contains project builds; `_site/` is the assembled deployment. Both are generated and ignored.
+
+`scripts/build-site.mjs` maps source folders to the existing public URLs: `site/` → `/`, `content/posts/` → `/posts/`, `content/reports/` → `/output/`, and project builds → `/<project>/`. Shared header CSS remains at `/shared/site-header.css`. Source folder names do not change page URLs, post links, report links, or shared game URLs. To preview static pages and posts, run `npm run build` and serve `_site/` (for example, `python3 -m http.server 8000 --directory _site`).
+
 Hex Pairs is a client-side React + TypeScript puzzle at **https://tianyuqi.github.io/hex-pairs/**. The existing website remains static HTML; the game has its own styles and assets.
 
 - `npm ci` installs dependencies (Node 24).
@@ -17,7 +38,7 @@ To deploy, select **GitHub Actions** under the repository’s **Settings → Pag
 Estimathon is an entirely client-side estimation game at **https://tianyuqi.github.io/estimathon/**, also linked from Home and Projects. Players create or play 13 questions, then share a score and challenge friends to the same questions.
 
 - `npm run dev:estimathon` serves it at http://localhost:5173/estimathon/.
-- `npm test -- estimathon/src` tests validation, exact scoring, compressed serialization, URL round-tripping, and challenge sharing.
+- `npm test -- projects/estimathon/src` tests validation, exact scoring, compressed serialization, URL round-tripping, and challenge sharing.
 - `npm run build` includes Estimathon in `_site/estimathon/`; serve `_site/` to check the complete production site.
 
 Version 1 state is compact JSON compressed with bundled `lz-string` and escaped with `URLSearchParams` in the `#d=...` URL fragment, which normal HTTP requests do not send to the hosting server. Existing `?d=` links still open and are rewritten to fragments in the browser. Builder drafts, question position, player intervals, and challenge results reconstruct from the URL without browser storage. Edits replace the current URL after 250 ms; navigation pushes history entries. Share links include only the current participant, so challenges never accumulate a chain of results. Scores are recomputed with `BigInt`, with integer values kept as decimal strings (up to 100 digits). Question text is limited to 200 characters, titles to 60, and names to 30. Invalid, unsupported, or oversized links show a recovery screen; unusually long generated links show a warning.
@@ -26,21 +47,21 @@ Links contain correct answers in compressed form. Compression is **not encryptio
 
 SF Home Buying Game is a static React + TypeScript app at `/homebuyer/`. Players bid on ten seeded homes with ten active seconds per home, then share a compressed challenge and compare results. The app uses no player storage or external gameplay API.
 
-**Playable demo:** until the supplied `listing_data.csv` is imported, the app plays ten seeded homes from the existing 20-home synthetic fixture. The game and shared results label these as simulated homes. Demo links use `d=simulated-test-20` and remain playable after real sales are published. See [the import and versioning guide](homebuyer/data/README.md) for normalization, polygon provenance, immutable releases, and the share format.
+**Playable demo:** until the supplied `listing_data.csv` is imported, the app plays ten seeded homes from the existing 20-home synthetic fixture. The game and shared results label these as simulated homes. Demo links use `d=simulated-test-20` and remain playable after real sales are published. See [the import and versioning guide](projects/homebuyer/data/README.md) for normalization, polygon provenance, immutable releases, and the share format.
 
 - `npm run dev:homebuyer` serves the game at http://localhost:5173/homebuyer/.
 - `npm run data:homebuyer -- /path/to/listing_data.csv 2026-11` publishes the first real dataset (default inclusive $5M cutoff).
-- `npm test -- homebuyer/src` checks exact scoring, active-time deadlines, sampling, and sharing.
+- `npm test -- projects/homebuyer/src` checks exact scoring, active-time deadlines, sampling, and sharing.
 - `npm run test:homebuyer-data` checks CSV normalization, polygon lookup, deduplication, and immutable publication.
 - `npm run build` includes the game and versioned JSON in `_site/homebuyer/` for the existing Pages workflow.
 
 Number Search is a mobile-first timed arithmetic game at **https://tianyuqi.github.io/number-hunt/**, linked from Projects.
 
 - `npm run dev:number-hunt` serves it at http://localhost:5173/number-hunt/.
-- `npm test -- number-hunt/src` checks all operation combinations across six preset/rule combinations, distribution, expression validity, timer resets, URL validation, and refresh recovery.
+- `npm test -- projects/number-hunt/src` checks all operation combinations across six preset/rule combinations, distribution, expression validity, timer resets, URL validation, and refresh recovery.
 - `npm run build` publishes it to `_site/number-hunt/` with the existing Pages workflow.
 
-Clear nine 9s, eight 8s, down through one 1, then five 0s. Choose settings and read the instructions on the setup screen. Press Start game to open the dedicated play screen and start the clock; every correct answer resets it to the preset's starting time, and wrong taps cost time. Easy starts at 90s (−1s per wrong tap), Normal at 30s (−2s), and Hard at 20s (−3s). Choose any combination of addition, subtraction, multiplication, and division independently of the pace. At least one operation must stay selected; a single operation may repeat expressions so every target remains solvable. Exact answers are the default; Last digit accepts nonnegative integer results with the matching units digit. Shared boards preserve the selected operations. Tuning and operand limits are in `number-hunt/src/game.ts`.
+Clear nine 9s, eight 8s, down through one 1, then five 0s. Choose settings and read the instructions on the setup screen. Press Start game to open the dedicated play screen and start the clock; every correct answer resets it to the preset's starting time, and wrong taps cost time. Easy starts at 90s (−1s per wrong tap), Normal at 30s (−2s), and Hard at 20s (−3s). Choose any combination of addition, subtraction, multiplication, and division independently of the pace. At least one operation must stay selected; a single operation may repeat expressions so every target remains solvable. Exact answers are the default; Last digit accepts nonnegative integer results with the matching units digit. Shared boards preserve the selected operations. Tuning and operand limits are in `projects/number-hunt/src/game.ts`.
 
 Version 1 concrete boards use compact `[left, operator, right, hiddenDigit]` tuples compressed with bundled `lz-string.compressToEncodedURIComponent` in `?g=`. Validation bounds both encoded and expanded data and checks every expression and the complete digit distribution. Typical full URLs are well below 2,000 characters. Compression is **not encryption**: a decoded URL exposes the board answers. Shares contain the complete puzzle and a fresh timer, never transient run state. Copy result adds an emoji stage summary without listing answers; native sharing is available on supported browsers, with manual copy fallback.
 

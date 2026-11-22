@@ -1,4 +1,4 @@
-import { SiteHeader } from '../../shared/SiteHeader';
+import { SiteHeader } from '../../../shared/components/SiteHeader';
 import { StrictMode, useEffect, useReducer, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { adjacent, availableHint, CELLS, complete, gameReducer, generatePuzzle, generateMultiplicationPuzzle, validPair, type Difficulty, type Mode, type Operation, type Pair } from './game';

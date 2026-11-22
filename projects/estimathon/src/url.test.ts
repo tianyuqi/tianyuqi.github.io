@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import LZString from 'lz-string';
-import { decompressBounded } from './decompress';
+import { decompressBounded } from '../../../shared/lib/decompress';
 import { emptyPairs, gameLinkState, newBuilder, resultLinkState, startPlaying, type State } from './game';
 import { SAMPLE, SAMPLES } from './sample';
 import { decode, encode, MAX_ENCODED, readUrl, stateUrl, validateState } from './url';

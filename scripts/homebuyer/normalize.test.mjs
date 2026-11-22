@@ -156,19 +156,19 @@ test('CLI archives the supplied CSV, publishes hashes, and refuses a released ve
   const root = await mkdtemp(join(tmpdir(), 'homebuyer-import-'));
   try {
     await mkdir(join(root, 'scripts/homebuyer'), { recursive: true });
-    await mkdir(join(root, 'homebuyer/data'), { recursive: true });
-    await mkdir(join(root, 'homebuyer/public/data'), { recursive: true });
+    await mkdir(join(root, 'projects/homebuyer/data'), { recursive: true });
+    await mkdir(join(root, 'projects/homebuyer/public/data'), { recursive: true });
     for (const file of ['import.mjs', 'normalize.mjs'])
       await cp(
         new URL(file, import.meta.url),
         join(root, 'scripts/homebuyer', file),
       );
     await writeFile(
-      join(root, 'homebuyer/data/sf-neighborhoods-2026-11-01.geojson'),
+      join(root, 'projects/homebuyer/data/sf-neighborhoods-2026-11-01.geojson'),
       JSON.stringify(boundaries),
     );
     await writeFile(
-      join(root, 'homebuyer/public/data/manifest.json'),
+      join(root, 'projects/homebuyer/public/data/manifest.json'),
       '{"latest":null,"datasets":{}}\n',
     );
     const records = Array.from({ length: 12 }, (_, i) => ({
@@ -196,10 +196,13 @@ test('CLI archives the supplied CSV, publishes hashes, and refuses a released ve
     const first = run();
     assert.equal(first.status, 0, first.stderr);
     const released = await readFile(
-      join(root, 'homebuyer/public/data/2026-11.json'),
+      join(root, 'projects/homebuyer/public/data/2026-11.json'),
     );
     const manifest = JSON.parse(
-      await readFile(join(root, 'homebuyer/public/data/manifest.json'), 'utf8'),
+      await readFile(
+        join(root, 'projects/homebuyer/public/data/manifest.json'),
+        'utf8',
+      ),
     );
     assert.equal(manifest.latest, '2026-11');
     assert.equal(
@@ -208,14 +211,14 @@ test('CLI archives the supplied CSV, publishes hashes, and refuses a released ve
     );
     assert.equal(
       await readFile(
-        join(root, 'homebuyer/data/2026-11/listing_data.csv'),
+        join(root, 'projects/homebuyer/data/2026-11/listing_data.csv'),
         'utf8',
       ),
       csv,
     );
     assert.equal(run().status, 1);
     assert.deepEqual(
-      await readFile(join(root, 'homebuyer/public/data/2026-11.json')),
+      await readFile(join(root, 'projects/homebuyer/public/data/2026-11.json')),
       released,
     );
   } finally {

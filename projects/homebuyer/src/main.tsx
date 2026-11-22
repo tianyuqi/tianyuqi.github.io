@@ -1,4 +1,4 @@
-import { SiteHeader } from '../../shared/SiteHeader';
+import { SiteHeader } from '../../../shared/components/SiteHeader';
 import {
   useCallback,
   useEffect,
@@ -542,7 +542,7 @@ function Game({ challenge, homes }: Loaded) {
             : 'Historical prices, not current valuations.'}
           <br />
           Dataset {challenge.version} ·{' '}
-          <a href="https://github.com/tianyuqi/tianyuqi.github.io/tree/HEAD/homebuyer/data">
+          <a href="https://github.com/tianyuqi/tianyuqi.github.io/tree/HEAD/projects/homebuyer/data">
             Data & methodology ↗
           </a>
         </footer>

@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  root: 'estimathon',
+  root: 'projects/estimathon',
   base: '/estimathon/',
-  build: { outDir: '../dist/estimathon', emptyOutDir: true },
+  build: { outDir: '../../dist/estimathon', emptyOutDir: true },
 });

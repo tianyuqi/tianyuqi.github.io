@@ -1,4 +1,4 @@
-import { SiteHeader } from '../../shared/SiteHeader';
+import { SiteHeader } from '../../../shared/components/SiteHeader';
 import { StrictMode, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
