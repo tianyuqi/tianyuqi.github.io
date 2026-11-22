@@ -75,15 +75,20 @@ export function restoreRun(board: Board, now: number): Run {
     const stored = JSON.parse(localStorage.getItem(STORAGE) || 'null');
     if (stored?.key !== encode(board)) return freshRun(board);
     const r = stored.run as Run;
+    const level = LEVELS[board.d];
+    const timed = level.initial !== null;
+    const validRemaining = timed
+      ? Number.isFinite(r?.remaining) &&
+        r.remaining! >= 0 &&
+        r.remaining! <= level.initial! * 1000
+      : r?.remaining === null;
     if (
       !r ||
       !Array.isArray(r.cleared) ||
       r.cleared.length > 50 ||
       new Set(r.cleared).size !== r.cleared.length ||
       !r.cleared.every((i) => Number.isInteger(i) && i >= 0 && i < 50) ||
-      !Number.isFinite(r.remaining) ||
-      r.remaining < 0 ||
-      r.remaining > LEVELS[board.d].initial * 1000 ||
+      !validRemaining ||
       !['ready', 'playing', 'won', 'lost'].includes(r.status)
     )
       return freshRun(board);
@@ -91,11 +96,15 @@ export function restoreRun(board: Board, now: number): Run {
     if (target !== null && r.cleared.some((i) => board.t[i][3] < target))
       return freshRun(board);
     if (r.status === 'ready') return freshRun(board);
+    const validClock = timed
+      ? Number.isFinite(r.deadline) &&
+        r.deadline! - now <= level.initial! * 1000
+      : r.deadline === null;
     if (
       !Number.isFinite(r.startedAt) ||
       r.startedAt! > now ||
-      !Number.isFinite(r.deadline) ||
-      r.deadline! - now > LEVELS[board.d].initial * 1000 ||
+      !validClock ||
+      (!timed && r.status === 'lost') ||
       (r.status === 'won') !== (r.cleared.length === 50) ||
       (r.status === 'playing'
         ? r.finishedAt !== null
@@ -113,5 +122,13 @@ export function summary(board: Board, run: Run, url: string): string {
       ? '🟩'
       : '⬜',
   ).join('');
-  return `Number Search ${run.status === 'won' ? '🏆' : '⏱'} ${run.cleared.length}/50\n${board.d[0].toUpperCase() + board.d.slice(1)} · ${board.r === 'exact' ? 'Exact answer' : 'Last digit'}\n${stages}\n${run.status === 'won' ? `${Math.ceil(run.remaining / 1000)}s left` : `${Math.round(((run.finishedAt ?? Date.now()) - (run.startedAt ?? Date.now())) / 1000)}s played`}\nTry my board: ${url}`;
+  const timed = LEVELS[board.d].initial !== null;
+  const elapsed = Math.round(
+    ((run.finishedAt ?? Date.now()) - (run.startedAt ?? Date.now())) / 1000,
+  );
+  const result = timed && run.status === 'won'
+    ? `${Math.ceil(run.remaining! / 1000)}s left`
+    : `${elapsed}s played`;
+  const icon = run.status === 'won' ? '🏆' : timed ? '⏱' : '🌱';
+  return `Number Search ${icon} ${run.cleared.length}/50\n${board.d[0].toUpperCase() + board.d.slice(1)} · ${board.r === 'exact' ? 'Exact answer' : 'Last digit'}\n${stages}\n${result}\nTry my board: ${url}`;
 }

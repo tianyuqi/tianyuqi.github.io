@@ -105,17 +105,18 @@ describe('local run recovery', () => {
     saveRun(b, freshRun(b));
     expect(restoreRun(b, 100000).status).toBe('ready');
   });
-  it('resumes Easy runs above 60 seconds after starting and after a match', () => {
+  it('restores Easy progress without introducing a time limit', () => {
     storage();
     const board = generateBoard('easy');
     const started = startRun(freshRun(board), 1000);
-    expect(started.remaining).toBe(90000);
+    expect(started.remaining).toBeNull();
+    expect(started.deadline).toBeNull();
     saveRun(board, started);
-    expect(restoreRun(board, 11000)).toEqual({ ...started, remaining: 80000 });
+    expect(restoreRun(board, 11000)).toEqual(started);
     const matched = tap(board, started, board.t.findIndex((tile) => tile[3] === 9), 11000);
     saveRun(board, matched);
-    expect(restoreRun(board, 12000)).toEqual({ ...matched, remaining: 89000 });
-    expect(restoreRun(board, 101000).status).toBe('lost');
+    expect(restoreRun(board, 12000)).toEqual(matched);
+    expect(restoreRun(board, 101000).status).toBe('playing');
     saveRun(board, { ...started, remaining: 91000 });
     expect(restoreRun(board, 1000)).toEqual(freshRun(board));
     saveRun(board, { ...started, deadline: 92000 });

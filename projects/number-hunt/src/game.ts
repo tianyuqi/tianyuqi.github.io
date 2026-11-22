@@ -4,8 +4,8 @@ export type Operator = '+' | '-' | '*' | '/';
 // Balancing defaults, operand limits, and allowed operations live together.
 export const LEVELS = {
   easy: {
-    initial: 90,
-    penalty: 1,
+    initial: null,
+    penalty: 0,
     maxOperand: 20,
     maxFactor: 9,
     maxResult: 40,
@@ -108,26 +108,29 @@ export function generateBoard(
 }
 export interface Run {
   cleared: number[];
-  remaining: number;
+  remaining: number | null;
   deadline: number | null;
   startedAt: number | null;
   finishedAt: number | null;
   status: 'ready' | 'playing' | 'won' | 'lost';
 }
-export const freshRun = (board: Board): Run => ({
-  cleared: [],
-  remaining: LEVELS[board.d].initial * 1000,
-  deadline: null,
-  startedAt: null,
-  finishedAt: null,
-  status: 'ready',
-});
+export const freshRun = (board: Board): Run => {
+  const initial = LEVELS[board.d].initial;
+  return {
+    cleared: [],
+    remaining: initial === null ? null : initial * 1000,
+    deadline: null,
+    startedAt: null,
+    finishedAt: null,
+    status: 'ready',
+  };
+};
 export const startRun = (run: Run, now: number): Run =>
   run.status === 'ready'
     ? {
         ...run,
         status: 'playing',
-        deadline: now + run.remaining,
+        deadline: run.remaining === null ? null : now + run.remaining,
         startedAt: now,
       }
     : run;
@@ -138,7 +141,7 @@ export const targetOf = (board: Board, run: Run) =>
       countFor(digit),
   ) ?? null;
 export function tick(run: Run, now: number): Run {
-  if (run.status !== 'playing') return run;
+  if (run.status !== 'playing' || run.deadline === null) return run;
   const remaining = Math.max(0, run.deadline! - now);
   return {
     ...run,
@@ -164,6 +167,7 @@ export function tap(
     return run;
   const target = targetOf(board, run);
   if (board.t[index][3] !== target) {
+    if (run.deadline === null) return run;
     const deadline = run.deadline! - LEVELS[board.d].penalty * 1000;
     const penalized = tick({ ...run, deadline }, now);
     return penalized.status === 'lost'
@@ -171,12 +175,13 @@ export function tap(
       : penalized;
   }
   const cleared = [...run.cleared, index];
-  const remaining = LEVELS[board.d].initial * 1000;
+  const initial = LEVELS[board.d].initial;
+  const remaining = initial === null ? null : initial * 1000;
   return {
     ...run,
     cleared,
     remaining,
-    deadline: now + remaining,
+    deadline: remaining === null ? null : now + remaining,
     status: cleared.length === 50 ? 'won' : 'playing',
     finishedAt: cleared.length === 50 ? now : null,
   };
